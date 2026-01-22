@@ -3,16 +3,108 @@
 @section('title', 'Register')
 
 @section('content')
+
+    <link rel="stylesheet" href="{{ asset('vendor/intl-tel-input/css/intlTelInput.css') }}">
+    <script src="{{ asset('vendor/intl-tel-input/js/intlTelInput.min.js') }}"></script>
+    <script src="{{ asset('vendor/intl-tel-input/js/utils.js') }}"></script>
+
+
+
+    <style>
+        button[disabled] {
+            opacity: .75;
+            cursor: not-allowed;
+        }
+
+        input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        #sendOtp .spinner-border {
+            vertical-align: middle;
+        }
+
+        .auth-header {
+            text-align: left;
+        }
+
+        .auth-header {
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 1rem;
+        }
+
+
+        .auth-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .auth-subtitle {
+            font-size: .95rem;
+            color: #6c757d;
+        }
+
+        .back-link {
+            font-size: .9rem;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* === intl-tel-input + Bootstrap FIX (FLAG AKTIF) === */
+
+        .iti {
+            width: 100%;
+        }
+
+        .iti--separate-dial-code .iti__selected-flag {
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            padding: 0 12px;
+            min-width: 72px;
+        }
+
+        .iti__flag {
+            margin-right: 6px;
+        }
+
+        .iti input.form-control {
+            padding-left: 90px !important;
+            /* ruang flag +62 */
+            height: calc(2.5rem + 2px);
+        }
+
+        .iti__selected-flag {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+
     <div class="auth-card">
 
-        <div class="mb-4 text-center">
-            <img src="{{ asset('projects/assets/img/symcardlong.png') }}" height="40" class="mb-3">
-            <h2 class="auth-title">Personal Registration</h2>
-            <p class="auth-subtitle">Create your own account</p>
+        {{-- REGISTER HEADER --}}
+        <div class="auth-header mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <img src="{{ asset('projects/assets/img/symcardlogolong.png') }}" alt="Logo" height="41">
+
+                <a href="{{ route('login') }}" class="back-link">
+                    ← Back to login
+                </a>
+            </div>
+
+            <h2 class="auth-title mb-1">Personal Registration</h2>
+            <p class="auth-subtitle mb-0">Create your own account</p>
         </div>
+
 
         <form method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
             @csrf
+            <input type="hidden" id="emailVerifiedSession" value="{{ session('email_verified_session') ? '1' : '0' }}">
 
             {{-- CATEGORY --}}
             <div class="mb-3">
@@ -46,16 +138,41 @@
             {{-- NIK --}}
             <div class="mb-3">
                 <label class="form-label">NIK / National Identity Number</label>
-                <input type="text" name="nik" value="{{ old('nik') }}" class="form-control @error('nik') is-invalid @enderror" pattern="[0-9]{16}">
+                <input type="text" name="nik" id="nik" value="{{ old('nik') }}" class="form-control @error('nik') is-invalid @enderror" pattern="[0-9]{16}" inputmode="numeric" maxlength="16" required oninput="validateNik(this)" oninvalid="validateNik(this)">
 
                 <div class="invalid-feedback">
-                    {{ $errors->first('nik') ?? 'Please enter a valid 16-digit NIK.' }}
+                    @error('nik')
+                        {{ $message }}
+                    @else
+                        NIK must contain exactly 16 digits.
+                    @enderror
                 </div>
 
                 <small class="text-warning">
                     Please fill in the informastion as registered in your Satu Sehat account
-                </small>
+                </small><br>
+
+
+
             </div>
+
+            {{-- MOBILE PHONE --}}
+            <div class="mb-3">
+                <label class="form-label">Mobile Phone </label>
+
+                {{-- <input type="tel" id="mobile_phone" name="mobile_phone" class="form-control" placeholder="8123456789" value="{{ old('mobile_phone') }}"> --}}
+                <input type="tel" id="mobile_phone" name="mobile_phone" class="form-control" placeholder="8123456789" value="{{ old('mobile_phone') }}" inputmode="numeric" autocomplete="tel" pattern="[0-9]*" @error('mobile_phone') is-invalid @enderror />
+
+                <div class="invalid-feedback">
+                    {{ $errors->first('mobile_phone') ?? 'Please provide a valid phone number.' }}
+                </div>
+                @error('mobile_phone')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+
 
             {{-- REGISTRATION TYPE --}}
             <div class="mb-3">
@@ -80,14 +197,23 @@
                 <label class="form-label">Email Address</label>
 
                 <div class="input-group">
-                    <input type="email" id="email" name="email" class="form-control" required>
+                    <input type="email" id="email" name="email" class="form-control" required value="{{ old('email') }}">
                     <button type="button" class="btn btn-outline-primary" id="sendOtp">
-                        Verify Email
+                        Verify
                     </button>
                 </div>
 
-                <small id="emailStatus" class="text-success d-none">Email available</small>
+                <small id="emailLoading" class="text-muted d-none mt-1">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Sending OTP code...
+                </small>
+
+                <small id="emailError" class="text-danger d-none mt-1"></small>
+                <small id="emailStatus" class="text-success d-none mt-1">
+                    Email verified
+                </small>
             </div>
+
 
             {{-- OTP FIELD --}}
             <div class="mb-3 d-none" id="otpSection">
@@ -95,7 +221,7 @@
 
                 <div class="input-group">
                     <input type="text" id="otp" class="form-control" maxlength="6">
-                    <span class="input-group-text" id="otpTimer">30s</span>
+                    <span class="input-group-text" id="otpTimer">60s</span>
                     <button type="button" class="btn btn-link p-0 mt-1 d-none" id="resendOtp">
                         Resend OTP
                     </button>
@@ -149,15 +275,7 @@
 
 
 
-            {{-- MOBILE PHONE --}}
-            <div class="mb-3">
-                <label class="form-label">Mobile Phone Number</label>
-                <input type="text" name="mobile_phone" value="{{ old('mobile_phone') }}" class="form-control @error('mobile_phone') is-invalid @enderror" pattern="^\+?[0-9]{9,15}$">
 
-                <div class="invalid-feedback">
-                    {{ $errors->first('mobile_phone') ?? 'Please provide a valid phone number.' }}
-                </div>
-            </div>
 
             {{-- INSTITUTION --}}
             <div class="mb-4">
@@ -169,15 +287,16 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-auth w-100">
-                Submit form
+            <button type="submit" class="btn btn-auth w-100" id="submitBtn" disabled>
+                Submit Register
             </button>
 
-            <div class="text-center mt-3">
+
+            {{-- <div class="text-center mt-3">
                 <a href="{{ route('login') }}" class="text-decoration-none">
                     ← Back to login
                 </a>
-            </div>
+            </div> --}}
 
         </form>
     </div>
@@ -250,7 +369,7 @@
 
     <script>
         let timerInterval
-        let remainingSeconds = 30
+        let remainingSeconds = 60
 
         const sendOtpBtn = document.getElementById('sendOtp')
         const resendOtpBtn = document.getElementById('resendOtp')
@@ -261,30 +380,78 @@
         const emailVerifiedInput = document.getElementById('emailVerified')
         const emailStatus = document.getElementById('emailStatus')
         const otpError = document.getElementById('otpError')
+        const emailLoading = document.getElementById('emailLoading')
+
+
+        const submitBtn = document.getElementById('submitBtn')
+
+        let emailVerified = false
+
+        function updateSubmitState() {
+            submitBtn.disabled = !emailVerified
+        }
 
         // SEND OTP
+        const emailError = document.getElementById('emailError')
+
         async function sendOtp() {
             const email = emailInput.value
             if (!email) return
 
+            // Reset UI
+            emailError.classList.add('d-none')
+            emailStatus.classList.add('d-none')
+
+            // 🔄 LOADING STATE
             sendOtpBtn.disabled = true
-            resendOtpBtn.classList.add('d-none')
-            otpError.classList.add('d-none')
+            emailInput.readOnly = true
+            emailLoading.classList.remove('d-none')
+            sendOtpBtn.innerHTML = `
+                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                Sending...
+                                `
 
-            await fetch('{{ route('email.sendOtp') }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email
+            try {
+                const res = await fetch('{{ route('email.sendOtp') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        email
+                    })
                 })
-            })
 
-            otpSection.classList.remove('d-none')
-            startTimer()
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Failed to send OTP')
+                }
+
+                // ✅ SUCCESS
+                otpSection.classList.remove('d-none')
+                startTimer()
+
+            } catch (err) {
+
+                // ❌ ERROR
+                emailError.innerText = err.message
+                emailError.classList.remove('d-none')
+
+                sendOtpBtn.disabled = false
+                emailInput.readOnly = false
+
+            } finally {
+
+                // 🧹 CLEAN LOADING
+                emailLoading.classList.add('d-none')
+                sendOtpBtn.innerHTML = 'Verify Email'
+            }
         }
+
 
         sendOtpBtn.addEventListener('click', sendOtp)
         resendOtpBtn.addEventListener('click', sendOtp)
@@ -292,7 +459,7 @@
         // TIMER
         function startTimer() {
             clearInterval(timerInterval)
-            remainingSeconds = 30
+            remainingSeconds = 60
             otpTimer.innerText = remainingSeconds + 's'
 
             timerInterval = setInterval(() => {
@@ -311,15 +478,23 @@
         // VERIFY OTP
         otpInput.addEventListener('blur', async () => {
             const email = emailInput.value
-            const otp = otpInput.value
+            const otp = otpInput.value.trim()
 
-            if (otp.length !== 6) return
+            // 🚫 VALIDASI FRONTEND KERAS
+            if (!/^[0-9]{6}$/.test(otp)) {
+                otpError.innerText = 'OTP must be exactly 6 digits.'
+                otpError.classList.remove('d-none')
+                return
+            }
+
+            otpError.classList.add('d-none')
 
             const res = await fetch('{{ route('email.verifyOtp') }}', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     email,
@@ -328,21 +503,132 @@
             })
 
             if (res.ok) {
+                emailVerified = true
+                updateSubmitState()
+
                 emailVerifiedInput.value = 1
                 emailStatus.classList.remove('d-none')
                 otpError.classList.add('d-none')
 
-                // CLEAN UI AFTER VERIFIED
-                clearInterval(timerInterval)
-                otpTimer.remove()
-                resendOtpBtn.remove()
-                sendOtpBtn.remove()
+                // 🔒 LOCK EMAIL & OTP
+                emailInput.readOnly = true
+                emailInput.classList.add('bg-light')
                 otpInput.setAttribute('disabled', true)
+
+                sendOtpBtn?.remove()
+                resendOtpBtn?.remove()
+                otpTimer?.remove()
+                clearInterval(timerInterval)
             } else {
+                const data = await res.json()
+                otpError.innerText = data.message || 'Invalid OTP'
                 otpError.classList.remove('d-none')
             }
         })
     </script>
+
+
+    <script>
+        (function() {
+            const form = document.querySelector('form')
+            const submitBtn = document.getElementById('submitBtn')
+
+            let submitted = false
+
+            form.addEventListener('submit', function(e) {
+
+                // Kalau sudah pernah submit → stop
+                if (submitted) {
+                    e.preventDefault()
+                    return false
+                }
+
+                // Jika form tidak valid → jangan disable
+                if (!form.checkValidity()) {
+                    return
+                }
+
+                // Tandai sudah submit
+                submitted = true
+
+                // Disable tombol
+                submitBtn.disabled = true
+
+                // Optional: ubah teks & tampilkan loading
+                submitBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Processing...
+            `
+            })
+        })()
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const emailVerifiedSession = document.getElementById('emailVerifiedSession')?.value === '1'
+
+            if (emailVerifiedSession) {
+                emailVerified = true
+                updateSubmitState()
+
+                // Kunci email
+                emailInput.readOnly = true
+                emailInput.classList.add('bg-light')
+
+                // Set hidden input
+                emailVerifiedInput.value = 1
+
+                // Tampilkan status
+                emailStatus.classList.remove('d-none')
+
+                // Pastikan OTP tidak muncul lagi
+                otpSection.classList.add('d-none')
+                otpError.classList.add('d-none')
+
+                // Remove tombol verify jika ada
+                if (sendOtpBtn) sendOtpBtn.remove()
+            }
+        })
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.querySelector("#mobile_phone")
+            const form = document.querySelector("form")
+            const phoneError = document.getElementById("phoneError")
+
+
+            const iti = window.intlTelInput(phoneInput, {
+                initialCountry: "id",
+                onlyCountries: ["id"],
+                separateDialCode: true,
+                nationalMode: false,
+                autoPlaceholder: "polite",
+                allowDropdown: false,
+                utilsScript: "{{ asset('vendor/intl-tel-input/js/utils.js') }}"
+            })
+        })
+    </script>
+
+    <script>
+        function validateNik(input) {
+            const regex = /^[0-9]{16}$/
+
+            if (!input.value) {
+                input.setCustomValidity('NIK is required.')
+            } else if (!regex.test(input.value)) {
+                input.setCustomValidity('NIK must contain exactly 16 digits.')
+            } else {
+                input.setCustomValidity('')
+            }
+        }
+    </script>
+
+
+
+
+
+
 
 
 

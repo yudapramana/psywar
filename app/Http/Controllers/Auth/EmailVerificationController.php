@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\EmailOtpMail;
 use App\Models\EmailVerification;
+use App\Models\OtpLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -16,18 +17,31 @@ class EmailVerificationController extends Controller
      */
     public function sendOtp(Request $request)
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => ['required', 'email', 'unique:users,email'],
         ], [
             'email.unique' => 'This email is already registered.',
-        ])->validate();
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->errors()->first('email'),
+            ], 422);
+        }
 
         $email = $request->email;
 
-        // Generate 6-digit OTP
+        // Check cooldown
+        $existing = EmailVerification::where('email', $email)->first();
+
+        if ($existing && $existing->updated_at->diffInSeconds(now()) < 30) {
+            return response()->json([
+                'message' => 'Please wait before requesting another OTP.',
+            ], 429);
+        }
+
         $otp = (string) random_int(100000, 999999);
 
-        // Save or update OTP record
         EmailVerification::updateOrCreate(
             ['email' => $email],
             [
@@ -37,10 +51,16 @@ class EmailVerificationController extends Controller
             ]
         );
 
-        // Send email
         Mail::to($email)->send(
             new EmailOtpMail($email, $otp)
         );
+
+        // LOG ATTEMPT
+        OtpLog::create([
+            'email' => $email,
+            'ip_address' => $request->ip(),
+            'action' => 'send',
+        ]);
 
         return response()->json([
             'message' => 'OTP has been sent to your email address.',
@@ -52,10 +72,20 @@ class EmailVerificationController extends Controller
      */
     public function verifyOtp(Request $request)
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'email' => ['required', 'email'],
-            'otp' => ['required', 'digits:6'],
-        ])->validate();
+            'otp' => ['required', 'regex:/^[0-9]{6}$/'],
+        ], [
+            'otp.required' => 'OTP code is required.',
+            'otp.regex' => 'OTP must be exactly 6 digits.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid OTP format.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $record = EmailVerification::where('email', $request->email)
             ->where('otp', $request->otp)
@@ -70,10 +100,12 @@ class EmailVerificationController extends Controller
 
         $record->update([
             'verified' => true,
+            'verified_at' => now(),
         ]);
 
         return response()->json([
             'message' => 'Email successfully verified.',
         ]);
     }
+
 }

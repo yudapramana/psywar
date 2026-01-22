@@ -40,7 +40,7 @@
                                 <i class="bi bi-calendar-event"></i>
                                 <div>
                                     <small class="text-muted">Deadline for abstract submission</small>
-                                    <div class="fw-semibold">05 October 2026</div>
+                                    <div class="fw-semibold">15 June 2026</div>
                                 </div>
                             </div>
 
@@ -48,13 +48,13 @@
                                 <i class="bi bi-bell"></i>
                                 <div>
                                     <small class="text-muted">Notification of acceptance</small>
-                                    <div class="fw-semibold">19 October 2026</div>
+                                    <div class="fw-semibold">20 June 2026</div>
                                 </div>
                             </div>
 
                             {{-- STATUS --}}
-                            <div class="alert alert-danger text-center fw-semibold mb-3">
-                                The submission is closed
+                            <div class="alert alert-success text-center fw-semibold mb-3">
+                                Submission is open
                             </div>
 
                             <a href="{{ asset('downloads/abstract-submission-guidelines.pdf') }}" class="btn btn-outline-primary w-100">
@@ -67,6 +67,7 @@
 
                 </div>
 
+
                 {{-- ================= CONTENT ================= --}}
                 <div class="col-lg-8">
 
@@ -77,7 +78,7 @@
 
                     <div class="ratio ratio-16x9 mb-5">
                         {{-- Ganti URL sesuai kebutuhan --}}
-                        <iframe src="https://drive.google.com/file/d/XXXXXXXX/preview" allow="autoplay">
+                        <iframe src="https://drive.google.com/file/d/0B4F2UNmFsOSxVG5nRm5CUDBzOWM/preview" allow="autoplay" loading="lazy">
                         </iframe>
                     </div>
 
@@ -95,14 +96,15 @@
                     <ul class="list-unstyled ps-3">
                         <li class="mb-2">
                             ✓ All Case and Research must be submitted and received before
-                            <strong>05 October 2026</strong>.
+                            <strong>15 June 2026</strong>.
                         </li>
                         <li class="mb-2">
                             ✓ Poster and Case competition for Medical Professionals
                             (Nurse, Technician, Radiographer, Pharmacists)
-                            must be submitted before <strong>01 October 2026</strong>.
+                            must be submitted before <strong>12 June 2026</strong>.
                         </li>
                     </ul>
+
 
                     {{-- NOTE --}}
                     <div class="alert alert-warning mt-4">

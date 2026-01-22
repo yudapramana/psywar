@@ -15,29 +15,41 @@
     <link href="{{ asset('projects/assets/css/main.css') }}" rel="stylesheet">
 
     <style>
+        /* ===== Background Pattern ===== */
         body {
-            background: #f5f7fb;
+            min-height: 100vh;
+            background-color: #f5f7fb;
+            background-image:
+                radial-gradient(#e3e7f1 1px, transparent 1px),
+                radial-gradient(#e3e7f1 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
         }
 
+        /* ===== Wrapper ===== */
         .auth-wrapper {
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            padding: 80px 16px 40px;
+            /* space atas */
         }
 
+        /* ===== Card ===== */
         .auth-card {
             width: 100%;
-            max-width: 520px;
+            max-width: 540px;
             background: #ffffff;
-            border-radius: 14px;
-            padding: 32px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 36px 34px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
         }
 
+        /* ===== Typography ===== */
         .auth-title {
             font-weight: 700;
-            font-size: 1.6rem;
+            font-size: 1.55rem;
         }
 
         .auth-subtitle {
@@ -45,6 +57,7 @@
             font-size: 0.95rem;
         }
 
+        /* ===== Button ===== */
         .btn-auth {
             background: var(--accent-color);
             color: #fff;
@@ -58,9 +71,31 @@
             color: #fff;
         }
 
+        /* ===== Form ===== */
         .form-label {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .input-group .btn {
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Mobile tweak */
+        @media (max-width: 576px) {
+            .auth-wrapper {
+                padding-top: 60px;
+            }
+
+            .auth-card {
+                padding: 28px 22px;
+            }
         }
     </style>
 

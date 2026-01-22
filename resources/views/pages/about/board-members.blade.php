@@ -23,6 +23,7 @@
     </div>
     {{-- /PAGE TITLE --}}
 
+    {{-- ================= MAIN SECTION ================= --}}
     <section class="section py-5">
         <div class="container">
             <div class="row">
@@ -37,29 +38,27 @@
 
                     @foreach ($boardGroups as $group)
                         {{-- GROUP TITLE --}}
-                        <div class="mb-4">
-                            <h4 class="fw-bold border-bottom pb-2">
+                        <div class="mb-3">
+                            <h4 class="group-title">
                                 {{ $group->name }}
                             </h4>
                         </div>
 
                         {{-- MEMBERS WITHOUT SUB SECTION --}}
                         @if ($group->members->count())
-                            <div class="row g-4 mb-4">
+                            <div class="row g-3 mb-4">
                                 @foreach ($group->members as $member)
-                                    <div class="col-md-6 col-lg-4">
-                                        <div class="card h-100 shadow-sm border-0">
-                                            <div class="card-body">
-                                                <h6 class="fw-bold mb-1">
-                                                    {{ $member->name }}
-                                                </h6>
-
-                                                @if ($member->position)
-                                                    <small class="text-danger">
-                                                        {{ $member->position }}
-                                                    </small>
-                                                @endif
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="member-item">
+                                            <div class="member-name">
+                                                {{ $member->name }}
                                             </div>
+
+                                            @if ($member->position)
+                                                <div class="member-position">
+                                                    {{ $member->position }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -68,27 +67,25 @@
 
                         {{-- SUB SECTIONS --}}
                         @foreach ($group->subSections as $sub)
-                            <div class="mt-4 mb-3">
-                                <h5 class="fw-semibold text-secondary">
+                            <div class="mt-4 mb-2">
+                                <h6 class="subsection-title">
                                     {{ $sub->name }}
-                                </h5>
+                                </h6>
                             </div>
 
-                            <div class="row g-4 mb-4">
+                            <div class="row g-3 mb-4">
                                 @foreach ($sub->members as $member)
-                                    <div class="col-md-6 col-lg-4">
-                                        <div class="card h-100 shadow-sm border-0">
-                                            <div class="card-body">
-                                                <h6 class="fw-bold mb-1">
-                                                    {{ $member->name }}
-                                                </h6>
-
-                                                @if ($member->position)
-                                                    <small class="text-danger">
-                                                        {{ $member->position }}
-                                                    </small>
-                                                @endif
+                                    <div class="col-sm-6 col-md-4">
+                                        <div class="member-item">
+                                            <div class="member-name">
+                                                {{ $member->name }}
                                             </div>
+
+                                            @if ($member->position)
+                                                <div class="member-position">
+                                                    {{ $member->position }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach

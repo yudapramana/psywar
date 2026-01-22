@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BoardMemberController;
 use App\Http\Controllers\MeetingAtGlanceController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\CaptchaController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +19,15 @@ use App\Http\Controllers\ProgramController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/captcha/refresh', function () {
+    session()->forget('captcha_code');
+})->name('captcha.refresh');
+
+
+Route::get('/captcha', [CaptchaController::class, 'generate'])
+    ->name('captcha.generate');
+
 
 Route::get('/venue', fn () => view('pages.venue'))->name('venue');
 
@@ -68,6 +79,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::post('/email/send-otp', [EmailVerificationController::class, 'sendOtp'])
     ->name('email.sendOtp');
+    // ->middleware('throttle:5,10')
+
 
 Route::post('/email/verify-otp', [EmailVerificationController::class, 'verifyOtp'])
     ->name('email.verifyOtp');
+// ->middleware('throttle:5,10')
+
+Route::post('/api/check-participant-identity', [
+    \App\Http\Controllers\Api\ParticipantCheckController::class,
+    'check'
+])->middleware('throttle:20,1')->name('api.participant.check');

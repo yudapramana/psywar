@@ -1,5 +1,5 @@
 <!-- Hero Section -->
-<section id="hero" class="hero section dark-background symcard-hero-medical">
+<section id="hero" class="hero section dark-background symcard-hero-medical p-0">
 
     <div class="background-overlay"></div>
 
@@ -66,12 +66,23 @@
                     <div class="cta-section">
 
                         <div class="cta-buttons">
-                            <a href="{{ route('register') }}" class="btn btn-primary btn-cta">
-                                Register Now
-                            </a>
+
+                            @auth
+                                {{-- USER SUDAH LOGIN --}}
+                                <a href="{{ route('home') }}" class="btn btn-primary btn-cta">
+                                    Go to Dashboard
+                                </a>
+                            @else
+                                {{-- USER BELUM LOGIN --}}
+                                <a href="{{ route('register') }}" class="btn btn-primary btn-cta">
+                                    Register Now
+                                </a>
+                            @endauth
+
                             <a href="#program" class="btn btn-secondary btn-cta">
                                 Scientific Program
                             </a>
+
                         </div>
 
                         <p class="cta-note">
@@ -79,6 +90,7 @@
                         </p>
 
                     </div>
+
 
                 </div><!-- End col-lg-10 -->
 

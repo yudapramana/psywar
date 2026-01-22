@@ -8,8 +8,8 @@
     <title>@yield('title', 'SYMCARD 2026 | Padang Symposium on Cardiovascular Disease')</title>
 
     <!-- Favicons -->
-    <link href="{{ asset('projects/assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ asset('projects/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    <link href="{{ asset('projects/assets/img/symcardfavicon.ico') }}" rel="icon">
+    <link href="{{ asset('projects/assets/img/symcardfavicon.ico') }}" rel="apple-touch-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -145,36 +145,47 @@
 
 
                 <li><a href="{{ route('venue') }}">Venue Information</a></li>
-                {{-- <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                    <ul>
-                        <li><a href="speaker-details.html">Speaker Details</a></li>
-                        <li><a href="tickets.html">Tickets</a></li>
-                        <li><a href="buy-tickets.html">Buy Tickets</a></li>
-                        <li><a href="gallery.html">Gallery</a></li>
-                        <li><a href="terms.html">Terms</a></li>
-                        <li><a href="privacy.html">Privacy</a></li>
-                        <li><a href="404.html">404</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                    <ul>
-                        <li><a href="#">Dropdown 1</a></li>
-                        <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                            <ul>
-                                <li><a href="#">Deep Dropdown 1</a></li>
-                                <li><a href="#">Deep Dropdown 2</a></li>
-                                <li><a href="#">Deep Dropdown 3</a></li>
-                                <li><a href="#">Deep Dropdown 4</a></li>
-                                <li><a href="#">Deep Dropdown 5</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#">Dropdown 2</a></li>
-                        <li><a href="#">Dropdown 3</a></li>
-                        <li><a href="#">Dropdown 4</a></li>
-                    </ul>
-                </li> --}}
-                <li><a href="{{ route('register') }}">Register Now</a></li>
-                <li><a href="{{ route('login') }}">Login to account</a></li>
+
+                {{-- AUTH SECTION --}}
+                @auth
+
+
+
+                    <li class="dropdown">
+                        <a href="#" class="{{ request()->routeIs('home*') ? 'active' : '' }}">
+                            <span>My Account</span>
+                            <i class="bi bi-chevron-down toggle-dropdown"></i>
+                        </a>
+
+                        <ul>
+                            <li>
+                                <a href="{{ route('home') }}">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="nav-dropdown-btn text-danger">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">
+                            Register Now
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">
+                            Login
+                        </a>
+                    </li>
+                @endauth
 
             </ul>
 

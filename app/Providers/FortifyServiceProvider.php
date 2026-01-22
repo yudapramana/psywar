@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Http\Controllers\Auth\CaptchaController;
 use App\Models\User;
 use App\Models\ParticipantCategory;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -26,6 +27,31 @@ class FortifyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+
+        Fortify::authenticateUsing(function (Request $request) {
+
+            // ======================
+            // VALIDASI CAPTCHA
+            // ======================
+            if (!CaptchaController::validate($request->captcha)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'captcha' => 'Captcha tidak sesuai.',
+                ]);
+            }
+
+            // ======================
+            // AUTHENTICATION
+            // ======================
+            $user = User::where('email', $request->email)->first();
+
+            if ($user && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+
+            return null;
+        });
+
+        
         // ✅ REGISTER VIEW (FIXED)
         Fortify::registerView(function () {
             $participantCategories = ParticipantCategory::orderBy('name')->get();
@@ -41,15 +67,15 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         // ✅ AUTHENTICATION
-        Fortify::authenticateUsing(function (Request $request) {
-            $user = User::where('email', $request->email)->first();
+        // Fortify::authenticateUsing(function (Request $request) {
+        //     $user = User::where('email', $request->email)->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
-                return $user;
-            }
+        //     if ($user && Hash::check($request->password, $user->password)) {
+        //         return $user;
+        //     }
 
-            return null;
-        });
+        //     return null;
+        // });
 
         // ✅ FORTIFY ACTIONS
         Fortify::createUsersUsing(CreateNewUser::class);

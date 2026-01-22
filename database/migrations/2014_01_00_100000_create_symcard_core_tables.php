@@ -89,15 +89,32 @@ return new class extends Migration
         */
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
-            $table->string('nik')->nullable()->index();
+
+            $table->string('nik')->nullable();
             $table->string('full_name');
-            $table->string('email')->nullable()->index();
+            $table->string('email')->nullable();
             $table->string('mobile_phone')->nullable();
             $table->string('institution')->nullable();
+
             $table->foreignId('participant_category_id')->constrained();
-            $table->enum('registration_type', ['sponsored', 'non_sponsored'])->default('non_sponsored');
+            $table->enum('registration_type', ['sponsored', 'non_sponsored'])
+                ->default('non_sponsored');
+
             $table->timestamps();
             $table->softDeletes();
+
+            /*
+            |--------------------------------------------------------------------------
+            | UNIQUE CONSTRAINT (SOFT DELETE SAFE)
+            |--------------------------------------------------------------------------
+            | Kombinasi dengan deleted_at supaya:
+            | - Data aktif harus unik
+            | - Data yang di-soft-delete boleh dipakai ulang
+            */
+
+            $table->unique(['nik', 'deleted_at'], 'participants_nik_unique');
+            $table->unique(['mobile_phone', 'deleted_at'], 'participants_mobile_unique');
+            $table->unique(['email', 'deleted_at'], 'participants_email_unique');
         });
 
         /*

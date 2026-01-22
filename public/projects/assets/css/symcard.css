@@ -28,7 +28,7 @@
       rgba(18, 58, 130, 0.88) 45%,
       rgba(128, 20, 40, 0.88) 100%
     ),
-    url("../img/symcard1.jpg");
+    url("../img/symcard-hero.jpg");
 
   background-size: cover;
   background-position: center;
@@ -998,3 +998,66 @@ body {
     border-radius: 8px;
     font-size: 14px;
 }
+
+
+/* ===============================
+   Board of Committee – Compact UI
+   =============================== */
+
+.group-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.subsection-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #6c757d;
+}
+
+.member-item {
+    padding: 0.75rem 0.9rem;
+    background: #ffffff;
+    border-left: 3px solid #0d6efd;
+    border-radius: 6px;
+    height: 100%;
+    transition: background .15s ease;
+}
+
+.member-item:hover {
+    background: #f8f9fa;
+}
+
+.member-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.member-position {
+    font-size: 0.8rem;
+    color: #dc3545;
+    margin-top: 2px;
+}
+
+/* Make logout button behave like nav dropdown link */
+.nav-dropdown-btn {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 10px 20px; /* samakan dengan <a> dropdown */
+    text-align: left;
+    font-size: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.nav-dropdown-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
