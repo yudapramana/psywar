@@ -10,6 +10,7 @@ class Participant extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'nik',
         'full_name',
         'email',
