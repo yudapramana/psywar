@@ -7,7 +7,10 @@ use App\Http\Controllers\BoardMemberController;
 use App\Http\Controllers\MeetingAtGlanceController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\CaptchaController;
-
+use App\Http\Controllers\Dashboard\BuyPackageController;
+use App\Http\Controllers\Dashboard\MyPackageController;
+use App\Http\Controllers\Dashboard\MyScheduleController;
+use App\Http\Controllers\Dashboard\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +22,61 @@ use App\Http\Controllers\CaptchaController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+
+    Route::get('/my-package', [MyPackageController::class, 'index'])
+        ->middleware('auth')
+        ->name('dashboard.my-package');
+
+    Route::get('/my-schedule', [MyScheduleController::class, 'index'])
+        ->middleware('auth')
+        ->name('dashboard.my-schedule');
+
+    // Step 1: Form Buy Package
+    Route::get('/buy-package', [BuyPackageController::class, 'create'])
+        ->name('dashboard.buy-package');
+
+    // Step 2: Submit Buy Package
+    Route::post('/buy-package', [BuyPackageController::class, 'store'])
+        ->name('dashboard.buy-package.store');
+
+    // ⬇️ AJAX price lookup
+    Route::get('/buy-package/price', [BuyPackageController::class, 'getPrice'])
+        ->name('dashboard.buy-package.price');
+
+    // Step 3: Payment Method
+    // Route::get('/payment/{registration}', [PaymentController::class, 'create'])
+    //     ->name('dashboard.payment');
+
+
+     // STEP 1 — choose bank
+    Route::get('/payment/choose-bank', [PaymentController::class, 'chooseBank'])
+        ->name('dashboard.payment.choose-bank');
+
+    Route::post('/payment/choose-bank', [PaymentController::class, 'storeBank'])
+        ->name('dashboard.payment.store-bank');
+
+    // STEP 2 — waiting transfer (show unique code & rekening)
+    Route::get('/payment/transfer', [PaymentController::class, 'waitingTransfer'])
+        ->name('dashboard.payment.transfer');
+
+    // STEP 3 — upload proof
+    Route::get('/payment/upload-proof', [PaymentController::class, 'uploadProof'])
+        ->name('dashboard.payment.upload-proof');
+
+    Route::post('/payment/upload-proof', [PaymentController::class, 'storeProof'])
+        ->name('dashboard.payment.store-proof');
+
+    Route::get('/completed', [PaymentController::class,'completed'])
+        ->name('dashboard.payment.completed');
+});
+
+
+
+
+
 
 Route::get('/captcha/refresh', function () {
     session()->forget('captcha_code');

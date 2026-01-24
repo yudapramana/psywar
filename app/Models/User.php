@@ -50,6 +50,12 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function participant()
+    {
+        return $this->hasOne(Participant::class);
+    }
+
+
     public function paymentVerifications()
     {
         return $this->hasMany(PaymentVerification::class, 'verified_by');

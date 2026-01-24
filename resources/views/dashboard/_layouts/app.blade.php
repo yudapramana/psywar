@@ -100,7 +100,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <a href="#" class="btn btn-warning btn-sm d-none d-md-inline">
+            <a href="{{ route('dashboard.buy-package') }}" class="btn btn-warning btn-sm d-none d-md-inline">
                 + Buy Package
             </a>
 
@@ -134,7 +134,7 @@
 
         {{-- SIDEBAR DESKTOP --}}
         <aside class="sidebar d-none d-lg-block">
-            @include('partials.dashboard-sidebar')
+            @include('dashboard._partials.sidebar')
         </aside>
 
         {{-- MAIN --}}
@@ -159,7 +159,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
-            @include('partials.dashboard-sidebar')
+            @include('dashboard._partials.sidebar')
         </div>
     </div>
 

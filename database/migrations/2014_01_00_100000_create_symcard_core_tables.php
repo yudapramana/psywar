@@ -89,6 +89,10 @@ return new class extends Migration
         */
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete()
+                ->unique();
 
             $table->string('nik')->nullable();
             $table->string('full_name');
@@ -127,6 +131,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('theme')->nullable();
             $table->text('description')->nullable();
+            $table->date('early_bird_end_date')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->string('location')->nullable();
@@ -305,12 +310,59 @@ return new class extends Migration
         */
         Schema::create('pricing_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('participant_category_id')->constrained();
-            $table->string('package_type');
-            $table->integer('workshop_quota')->nullable();
+
+            // WHO
+            $table->foreignId('participant_category_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            // WHEN (Early / Late)
+            $table->enum('bird_type', ['early', 'late']);
+
+            // WHAT
+            $table->boolean('includes_symposium')->default(true);
+            $table->unsignedTinyInteger('workshop_count')->default(0); // 0,1,2
+
+            // PRICE
             $table->decimal('price', 12, 2);
+
+            $table->timestamps();
+
+            // 🔒 Prevent duplicate price rules
+            $table->unique([
+                'participant_category_id',
+                'bird_type',
+                'workshop_count'
+            ], 'unique_pricing_rule');
+        });
+
+        /*
+        |-------------------------------------------------------------------------- 
+        | BANKS
+        |-------------------------------------------------------------------------- 
+        */
+        Schema::create('banks', function (Blueprint $table) {
+            $table->id();
+
+            // IDENTITAS BANK
+            $table->string('code', 20)->unique();   // BSI, BRI, BNI, BCA, MANDIRI
+            $table->string('name');                 // Bank Syariah Indonesia
+
+            // REKENING TUJUAN
+            $table->string('account_number');       // 1234567890
+            $table->string('account_name');         // Kelakar Unand
+
+            // BIAYA ADMIN (OPSIONAL / FUTURE)
+            $table->decimal('admin_fee', 12, 2)->default(0);
+
+            // UI & STATUS
+            $table->boolean('is_active')->default(true);
+            $table->integer('order')->default(0);
+
             $table->timestamps();
         });
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -319,13 +371,56 @@ return new class extends Migration
         */
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('participant_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('pricing_item_id')->constrained();
-            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
+
+            $table->foreignId('event_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('participant_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('pricing_item_id')
+                ->constrained()
+                ->restrictOnDelete();
+
+            $table->foreignId('bank_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->enum('payment_step', [
+                'choose_bank',
+                'waiting_transfer',
+                'waiting_verification',
+                'paid'
+            ])->default('choose_bank');
+
+            /*
+            |----------------------------------------------------------
+            | PAYMENT STATUS
+            |----------------------------------------------------------
+            */
+            $table->enum('status', ['pending', 'paid', 'cancelled'])
+                ->default('pending');
+
+            /*
+            |----------------------------------------------------------
+            | PAYMENT AMOUNT
+            |----------------------------------------------------------
+            | total_amount = harga paket
+            | unique_code  = kode unik transfer (3 digit)
+            | total transfer = total_amount + unique_code
+            */
             $table->decimal('total_amount', 12, 2);
+
+            $table->unsignedSmallInteger('unique_code')->nullable()
+                ->comment('Unique transfer code for manual bank transfer verification');
+
             $table->timestamps();
         });
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -334,11 +429,20 @@ return new class extends Migration
         */
         Schema::create('registration_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('registration_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('activity_id')->constrained()->cascadeOnDelete();
-            $table->string('activity_type');
+
+            $table->foreignId('registration_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('activity_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->enum('activity_type', ['symposium', 'workshop']);
+
             $table->timestamps();
         });
+
 
         /*
         |--------------------------------------------------------------------------
@@ -347,14 +451,24 @@ return new class extends Migration
         */
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('registration_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('registration_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
             $table->string('payment_method');
             $table->decimal('amount', 12, 2);
+
             $table->string('proof_file')->nullable();
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+
+            $table->enum('status', ['pending', 'verified', 'rejected'])
+                ->default('pending');
+
             $table->timestamp('paid_at')->nullable();
+
             $table->timestamps();
         });
+
 
         /*
         |--------------------------------------------------------------------------
@@ -363,12 +477,20 @@ return new class extends Migration
         */
         Schema::create('payment_verifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('verified_by')->constrained('users');
+
+            $table->foreignId('payment_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('verified_by')
+                ->constrained('users');
+
             $table->timestamp('verified_at')->nullable();
             $table->text('notes')->nullable();
+
             $table->timestamps();
         });
+
     }
 
     public function down(): void

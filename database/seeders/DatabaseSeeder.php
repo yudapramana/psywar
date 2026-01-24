@@ -29,6 +29,9 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
             ActivitySeeder::class,
             SessionSeeder::class,
+            BankSeeder::class,
+            PricingItemSeeder::class,
+            UserParticipantSeeder::class
         ]);
     }
 }

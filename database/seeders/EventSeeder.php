@@ -14,6 +14,7 @@ class EventSeeder extends Seeder
         $event = Event::create([
             'name' => '11th Padang Symposium on Cardiovascular Diseases',
             'theme' => 'Cardiology 360°: Integrating Knowledge, Technology, and Practice',
+            'early_bird_end_date' => '2026-05-25',
             'start_date' => '2026-06-05',
             'end_date' => '2026-06-07',
             'location' => 'Padang',

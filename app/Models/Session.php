@@ -32,6 +32,12 @@ class Session extends Model
         return $this->belongsTo(EventDay::class, 'event_day_id');
     }
 
+    public function eventDay()
+    {
+        return $this->belongsTo(EventDay::class, 'event_day_id');
+    }
+
+
     public function room()
     {
         return $this->belongsTo(Room::class);

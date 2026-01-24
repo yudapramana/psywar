@@ -19,7 +19,12 @@ class Participant extends Model
         'registration_type',
     ];
 
-    public function category()
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function participantCategory()
     {
         return $this->belongsTo(ParticipantCategory::class, 'participant_category_id');
     }

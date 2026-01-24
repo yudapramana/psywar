@@ -10,22 +10,23 @@ class ParticipantCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            'Fellow in Training',
-            'General Practitioners',
-            'Interventional Cardiologists',
-            'Medical Technicians / Radiographer',
-            'Nurse',
-            'Other Specialist',
+            [
+                'name' => 'Student / Nurse',
+            ],
+            [
+                'name' => 'General Practitioner / Internship',
+            ],
+            [
+                'name' => 'Specialist',
+            ],
         ];
 
-        $data = collect($categories)->map(function ($name) {
-            return [
-                'name' => $name,
+        DB::table('participant_categories')->insert(
+            collect($categories)->map(fn ($item) => [
+                'name'       => $item['name'],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ];
-        })->toArray();
-
-        DB::table('participant_categories')->insert($data);
+            ])->toArray()
+        );
     }
 }

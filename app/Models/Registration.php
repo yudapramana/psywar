@@ -6,13 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Registration extends Model
 {
-    protected $fillable = [
-        'event_id',
-        'participant_id',
-        'pricing_item_id',
-        'status',
-        'total_amount',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'total_amount' => 'decimal:2',
@@ -41,5 +35,10 @@ class Registration extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
     }
 }
