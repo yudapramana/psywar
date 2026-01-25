@@ -56,7 +56,7 @@
 
                     <ul>
                         <li>
-                            <a href="{{ route('program.meeting-at-glance') }}" class="{{ request()->routeIs('program.meeting-at-glance') ? 'active' : '' }}">
+                            <a href="{{ route('program.full-program') }}" class="{{ request()->routeIs('program.meeting-at-glance') ? 'active' : '' }}">
                                 Meeting at Glance
                             </a>
                         </li>

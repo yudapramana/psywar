@@ -5,9 +5,20 @@
 @section('content')
 
     {{-- ================= PAGE TITLE ================= --}}
-    <div class="page-title dark-background" style="background-image: url('{{ asset('projects/assets/img/events/showcase-9.webp') }}');">
+    <div class="page-title dark-background" style="
+        background-image:
+        linear-gradient(
+            135deg,
+            rgba(11, 28, 61, 0.23) 0%,
+            rgba(18, 58, 130, 0.23) 45%,
+            rgba(128, 20, 40, 0.23) 100%
+        ),
+        url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent1.jpg') }}');
+        background-size: cover;
+        background-position: center;
+    ">
         <div class="container position-relative">
-            <h1>Meeting at a Glance</h1>
+            <h1>Full Programs</h1>
             <p>
                 11<sup>th</sup> Padang Symposium on Cardiovascular Disease<br>
                 Cardiology 360°: Integrating Knowledge, Technology, and Practice
@@ -16,7 +27,7 @@
             <nav class="breadcrumbs">
                 <ol>
                     <li><a href="{{ route('landing') }}">Home</a></li>
-                    <li class="current">Meeting at a Glance</li>
+                    <li class="current">Full Programs</li>
                 </ol>
             </nav>
         </div>

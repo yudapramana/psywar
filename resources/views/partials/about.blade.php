@@ -51,7 +51,7 @@
 
                     <!-- CTA -->
                     <div class="cta-section">
-                        <a href="{{ route('program.meeting-at-glance') }}" class="btn btn-primary">
+                        <a href="{{ route('program.full-program') }}" class="btn btn-primary">
                             View Scientific Program
                         </a>
                         <a href="#registration" class="btn btn-outline">

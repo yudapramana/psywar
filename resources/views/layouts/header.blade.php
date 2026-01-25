@@ -113,6 +113,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('program.full-program') }}" class="{{ request()->routeIs('program.full-program') ? 'active' : '' }}">
+                                Full Program
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('program.resources') }}" class="{{ request()->routeIs('program.resources') ? 'active' : '' }}">
                                 Program Resources
                             </a>

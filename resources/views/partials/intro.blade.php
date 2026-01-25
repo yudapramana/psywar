@@ -133,7 +133,7 @@
                         </li>
                     </ul>
 
-                    <a href="{{ route('program.meeting-at-glance') }}" class="btn btn-discover mt-4">
+                    <a href="{{ route('program.full-program') }}" class="btn btn-discover mt-4">
                         View Scientific Program
                     </a>
 

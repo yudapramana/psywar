@@ -102,6 +102,9 @@ Route::prefix('program')->group(function () {
     Route::get('/meeting-at-glance', [ProgramController::class, 'meetingAtGlance'])
         ->name('program.meeting-at-glance');
 
+    Route::get('/full-program', [ProgramController::class, 'fullProgram'])
+        ->name('program.full-program');
+
     Route::get('/resources', [ProgramController::class, 'resources'])
         ->name('program.resources');
 });

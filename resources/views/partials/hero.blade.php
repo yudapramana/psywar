@@ -79,7 +79,7 @@
                                 </a>
                             @endauth
 
-                            <a href="#program" class="btn btn-secondary btn-cta">
+                            <a href="{{ route('program.full-program') }}" class="btn btn-secondary btn-cta">
                                 Scientific Program
                             </a>
 
