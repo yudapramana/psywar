@@ -172,18 +172,7 @@ background-position: center;
                         $timeSlots = collect($boundaries)->unique()->sort()->values()->toArray();
                     @endphp
 
-                    {{-- DEBUG --}}
-                    <pre style="font-size:11px">
-                        Day ID: {{ $day->id }}
-                        Sessions count: {{ $day->sessions->count() }}
 
-                        @foreach ($day->sessions as $s)
-- Session ID: {{ $s->id }}
-                        Room: {{ $s->room_id }}
-                        Start: {{ $s->start_time }}
-                        End: {{ $s->end_time }}
-@endforeach
-                        </pre>
 
 
                     <div class="tab-pane fade @if ($loop->first) show active @endif" id="day-{{ $day->id }}">
@@ -221,10 +210,7 @@ background-position: center;
                                                     $session = $day->sessions->first(function ($s) use ($room, $slotStart, $slotEnd) {
                                                         if ($s->room_id !== $room->id) {
                                                             return false;
-                                                        } else {
-                                                            echo 's->room_id:' . $s->room_id . ', room->id: ' . $room->id . '<br>';
                                                         }
-                                                        echo gettype($s->room_id) . ' | ' . gettype($room->id);
 
                                                         $ss = \Carbon\Carbon::parse($s->start_time)->format('H:i');
                                                         $se = \Carbon\Carbon::parse($s->end_time)->format('H:i');
