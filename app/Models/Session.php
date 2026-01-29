@@ -18,7 +18,6 @@ class Session extends Model
     ];
 
     protected $casts = [
-        'room_id' => 'integer',
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
     ];
