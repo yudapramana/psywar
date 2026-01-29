@@ -270,9 +270,12 @@ return new class extends Migration
         */
         Schema::create('paper_types', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique(); // ABSTRACT, CASE
             $table->string('name');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
+
 
         /*
         |--------------------------------------------------------------------------
@@ -281,14 +284,58 @@ return new class extends Migration
         */
         Schema::create('papers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('participant_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('paper_type_id')->constrained();
-            $table->string('title');
+
+            $table->foreignId('participant_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('paper_type_id')
+                ->constrained()
+                ->restrictOnDelete();
+
+            // Title sesuai guideline (≤ 300 chars)
+            $table->string('title', 300);
+
+            // Abstract (≤ 300 words, validated at application level)
+            $table->text('abstract')
+                ->comment('Abstract content, maximum 300 words');
+
+
+            // File utama (.docx / .pdf)
             $table->string('file_path');
-            $table->enum('status', ['draft', 'submitted', 'reviewed', 'accepted', 'rejected'])->default('submitted');
+
+            $table->enum('file_type', ['docx', 'pdf'])
+                ->default('docx');
+
+            // Workflow status
+            $table->enum('status', [
+                'draft',
+                'submitted',
+                'under_review',
+                'accepted',
+                'rejected',
+                'withdrawn'
+            ])->default('submitted');
+
+            // =========================
+            // FINAL PRESENTATION STATUS (PUBLIC)
+            // =========================
+            $table->enum('final_status', [
+                'oral_presentation',
+                'poster_presentation',
+            ])->nullable()
+            ->comment('Final presentation result after review');
+
+            // =========================
+            // TIMESTAMPS
+            // =========================
             $table->timestamp('submitted_at')->nullable();
+            $table->timestamp('reviewed_at')->nullable();
+            $table->timestamp('finalized_at')->nullable();
+
             $table->timestamps();
         });
+
 
         /*
         |--------------------------------------------------------------------------
@@ -297,11 +344,24 @@ return new class extends Migration
         */
         Schema::create('paper_authors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('paper_id')->constrained()->cascadeOnDelete();
-            $table->string('author_name');
+
+            $table->foreignId('paper_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->string('name');
             $table->string('affiliation')->nullable();
+
+            // 🔑 Peran penulis
+            $table->boolean('is_corresponding')->default(false);
+            $table->boolean('is_presenting')->default(false);
+
+            // Urutan penulis (First author, second, etc)
+            $table->unsignedSmallInteger('order')->default(1);
+
             $table->timestamps();
         });
+
 
         /*
         |--------------------------------------------------------------------------

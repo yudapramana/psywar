@@ -28,6 +28,30 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
+        // ======================
+        // Reset Password
+        // ======================
+
+        Fortify::viewPrefix('auth.');
+
+        Fortify::loginView(fn () => view('auth.login'));
+        Fortify::registerView(fn () => view('auth.register'));
+
+        // 🔴 WAJIB ADA
+        Fortify::requestPasswordResetLinkView(fn () =>
+            view('auth.forgot-password')
+        );
+
+        // Fortify::resetPasswordView(function ($request) {
+        //     dd($request->all());
+        // });
+
+        Fortify::resetPasswordView(fn ($request) =>
+            view('auth.reset-password', [
+                'request' => $request
+            ])
+        );
+        
         Fortify::authenticateUsing(function (Request $request) {
 
             // ======================
@@ -65,6 +89,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(function () {
             return view('auth.login');
         });
+
+        // ✅ REDIRECT SETELAH LOGIN
+        Fortify::redirects('login', '/dashboard/my-schedule');
 
         // ✅ AUTHENTICATION
         // Fortify::authenticateUsing(function (Request $request) {

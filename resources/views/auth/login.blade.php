@@ -37,13 +37,6 @@
     </style>
     <div class="auth-card">
 
-        {{-- <div class="mb-4 text-center">
-            <img src="{{ asset('projects/assets/img/symcardlong.png') }}" height="40" class="mb-3">
-            <h2 class="auth-title">Login</h2>
-            <p class="auth-subtitle">Access your SYMCARD account</p>
-        </div> --}}
-
-
         <div class="auth-header mb-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <img src="{{ asset('projects/assets/img/symcardlogolong.png') }}" alt="Logo" height="41">
@@ -73,9 +66,15 @@
             </div>
 
             <!-- Password -->
-            <div class="mb-3">
+            <div class="mb-0">
                 <label class="form-label">Password</label>
                 <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="text-end mt-0 mb-2">
+                <a href="{{ route('password.request') }}" class="small text-muted">
+                    Forgot your password?
+                </a>
             </div>
 
             <!-- Captcha -->
@@ -97,7 +96,6 @@
                     </div>
                 @enderror
             </div>
-
 
 
 

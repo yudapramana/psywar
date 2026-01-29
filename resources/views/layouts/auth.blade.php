@@ -14,6 +14,9 @@
     <!-- Main CSS -->
     <link href="{{ asset('projects/assets/css/main.css') }}" rel="stylesheet">
 
+    {{-- Sweetalert 2 --}}
+    <link href="{{ asset('projects/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+
     <style>
         /* ===== Background Pattern ===== */
         body {
@@ -109,6 +112,7 @@
     </div>
 
     <script src="{{ asset('projects/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('projects/assets/vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
     @stack('scripts')
 </body>
 

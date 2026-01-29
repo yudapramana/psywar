@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaperAuthor extends Model
 {
-    protected $fillable = [
-        'paper_id',
-        'author_name',
-        'affiliation',
-    ];
+    protected $guarded = [];
 
     public function paper()
     {

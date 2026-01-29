@@ -6,14 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Paper extends Model
 {
-    protected $fillable = [
-        'participant_id',
-        'paper_type_id',
-        'title',
-        'file_path',
-        'status',
-        'submitted_at',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'submitted_at' => 'datetime',
@@ -24,7 +17,7 @@ class Paper extends Model
         return $this->belongsTo(Participant::class);
     }
 
-    public function type()
+    public function paperType()
     {
         return $this->belongsTo(PaperType::class, 'paper_type_id');
     }

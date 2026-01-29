@@ -140,7 +140,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('login') }}" class="{{ request()->routeIs('escience.accepted-abstracts-cases') ? 'active' : '' }}">
+                            <a href="{{ route('escience.accepted-research-case') }}" class="{{ request()->routeIs('escience.accepted-research-case') ? 'active' : '' }}">
                                 Accepted Abstract & Case
                             </a>
                         </li>

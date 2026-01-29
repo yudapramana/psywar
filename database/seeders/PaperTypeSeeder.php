@@ -11,17 +11,16 @@ class PaperTypeSeeder extends Seeder
     {
         DB::table('paper_types')->insert([
             [
-                'name' => 'Abstract',
+                'code' => 'RESEARCH',
+                'name' => 'Research',
+                'description' => 'Scientific Research submission (DOCX)',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Full Paper',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
+                'code' => 'CASE',
                 'name' => 'Case Report',
+                'description' => 'Clinical case submission with images inside document',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

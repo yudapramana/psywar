@@ -25,35 +25,33 @@ class BuyPackageController extends Controller
             abort(403, 'Participant profile not found.');
         }
 
-        // 🔒 CEK REGISTRASI AKTIF (BELUM SELESAI BAYAR)
-        $activeRegistration = Registration::where('participant_id', $participant->id)
-            ->whereIn('payment_step', [
-                'choose_bank',
-                'waiting_transfer',
-                'waiting_verification',
-            ])
+        $event = Event::where('is_active', true)->firstOrFail();
+
+        // 🔒 CEK APAKAH SUDAH ADA REGISTRASI (APAPUN STATUSNYA)
+        $registration = Registration::where('participant_id', $participant->id)
+            ->where('event_id', $event->id)
             ->latest()
             ->first();
 
-        // ❌ JIKA ADA → LANGSUNG ARAHKAN KE PAYMENT FLOW
-        if ($activeRegistration) {
+        if ($registration) {
 
-            session(['registration_id' => $activeRegistration->id]);
+            session(['registration_id' => $registration->id]);
 
-            $route = match ($activeRegistration->payment_step) {
+            $route = match ($registration->payment_step) {
                 'choose_bank' => route('dashboard.payment.choose-bank'),
-                'waiting_transfer' => route('dashboard.payment.transfer', $activeRegistration->id),
+                'waiting_transfer' => route('dashboard.payment.transfer', $registration->id),
                 'waiting_verification' => route('dashboard.my-package'),
                 'paid' => route('dashboard.my-package'),
                 default => route('dashboard.my-package'),
             };
 
-            return redirect($route)
-                ->with('warning', 'You already have an active registration. Please complete your payment.');
+            return redirect($route)->with(
+                'info',
+                'You already have a registration for this event.'
+            );
         }
 
-
-        // ✅ AMBIL DATA WORKSHOP (BARU BOLEH BELI)
+        // ✅ BARU BOLEH BUY PACKAGE JIKA BELUM ADA REGISTRASI SAMA SEKALI
         $workshops = DB::table('activities')
             ->join('sessions', 'sessions.activity_id', '=', 'activities.id')
             ->select(
@@ -73,6 +71,7 @@ class BuyPackageController extends Controller
             'workshops'
         ));
     }
+
 
 
 
@@ -137,19 +136,31 @@ class BuyPackageController extends Controller
     {
         $participant = Auth::user()->participant;
 
+        /*
+        |----------------------------------------------------------
+        | VALIDATION
+        |----------------------------------------------------------
+        */
         $request->validate([
             'package_type' => 'required|in:1,2,3',
 
-            // PACKAGE 2 → SINGLE WORKSHOP
-            'workshops'   => 'exclude_unless:package_type,2|required|array|min:1',
-            'workshops.*' => 'exclude_unless:package_type,2|required|exists:activities,id',
-
-            // PACKAGE 3 → BUNDLING
-            'workshop_bundling' => 'exclude_unless:package_type,3|required|string',
+            // package 2 & 3 pakai workshops[]
+            'workshops' => 'exclude_unless:package_type,2,3|array',
+            'workshops.*' => 'exclude_unless:package_type,2,3|exists:activities,id',
         ]);
 
+        /*
+        |----------------------------------------------------------
+        | ACTIVE EVENT
+        |----------------------------------------------------------
+        */
         $event = Event::where('is_active', true)->firstOrFail();
 
+        /*
+        |----------------------------------------------------------
+        | PREVENT DUPLICATE ACTIVE REGISTRATION
+        |----------------------------------------------------------
+        */
         $existingRegistration = Registration::where('event_id', $event->id)
             ->where('participant_id', $participant->id)
             ->whereIn('payment_step', [
@@ -165,8 +176,12 @@ class BuyPackageController extends Controller
                 ->with('warning', 'You already have an active registration. Please complete your payment.');
         }
 
-
-        DB::transaction(function () use ($request, $participant) {
+        /*
+        |----------------------------------------------------------
+        | TRANSACTION
+        |----------------------------------------------------------
+        */
+        DB::transaction(function () use ($request, $participant, $event) {
 
             /*
             |----------------------------------------------------------
@@ -181,11 +196,9 @@ class BuyPackageController extends Controller
 
             /*
             |----------------------------------------------------------
-            | ACTIVE EVENT + BIRD TYPE
+            | BIRD TYPE
             |----------------------------------------------------------
             */
-            $event = Event::where('is_active', true)->firstOrFail();
-
             $birdType = $event->early_bird_end_date &&
                         now()->lte($event->early_bird_end_date)
                 ? 'early'
@@ -219,7 +232,7 @@ class BuyPackageController extends Controller
 
             /*
             |----------------------------------------------------------
-            | SYMPOSIUM → AUTO INCLUDE
+            | SYMPOSIUM (AUTO INCLUDE)
             |----------------------------------------------------------
             */
             $symposiumIds = Activity::where('category', 'symposium')
@@ -239,18 +252,10 @@ class BuyPackageController extends Controller
             | WORKSHOPS
             |----------------------------------------------------------
             */
-            $workshopIds = [];
+            $workshopIds = $request->workshops ?? [];
 
-            if ((int) $request->package_type === 2) {
-                $workshopIds = $request->workshops;
-            }
-
-            if ((int) $request->package_type === 3) {
-                $workshopIds = explode(',', $request->workshop_bundling);
-
-                if (count($workshopIds) !== 2) {
-                    throw new \Exception('Invalid workshop bundling.');
-                }
+            if ($workshopCount !== count($workshopIds)) {
+                throw new \Exception('Invalid workshop selection count.');
             }
 
             foreach ($workshopIds as $workshopId) {
@@ -274,9 +279,17 @@ class BuyPackageController extends Controller
             session(['registration_id' => $registrationId]);
         });
 
-        // 🔥 REDIRECT KE PAYMENT FLOW BARU
-        return redirect()->route('dashboard.payment.choose-bank');
+        /*
+        |----------------------------------------------------------
+        | REDIRECT TO PAYMENT
+        |----------------------------------------------------------
+        */
+        return redirect()
+            ->route('dashboard.payment.choose-bank')
+            ->with('success', 'Package successfully selected. Please choose your bank.');
+
     }
+
 
 
 }

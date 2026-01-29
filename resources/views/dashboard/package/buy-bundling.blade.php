@@ -166,42 +166,44 @@
                 $afternoon = $workshops->filter(fn($w) => $w->start_time >= '12:00:00')->values();
             @endphp
 
-            {{-- DOUBLE WORKSHOP (MORNING & AFTERNOON) --}}
-            <div class="mb-3 d-none" id="workshopDouble">
-                <label class="form-label">Workshop (Choose 2)</label>
+            {{-- WORKSHOP BUNDLING --}}
+            <div class="mb-3 d-none" id="workshopBundling">
+                <label class="form-label">Workshop Bundling</label>
 
-                {{-- MORNING --}}
-                <select name="workshops[]" id="workshopMorningSelect" class="form-select mb-2">
-                    <option value="">Choose Morning Workshop</option>
-                    @foreach ($workshops as $ws)
-                        @if ($ws->start_time < '12:00:00')
-                            <option value="{{ $ws->id }}">
-                                {{ $ws->code }} – {{ $ws->title }}
-                                [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
-                            </option>
-                        @endif
-                    @endforeach
+                <select name="workshop_bundling" id="workshopBundlingSelect" class="form-select">
+                    <option value="">Choose Bundling</option>
+
+                    @if ($morning->count() >= 2 && $afternoon->count() >= 2)
+                        <option value="{{ $morning[0]->id }},{{ $afternoon[0]->id }}" data-items='[
+                    "{{ $morning[0]->code }} – {{ $morning[0]->title }} [{{ substr($morning[0]->start_time, 0, 5) }}–{{ substr($morning[0]->end_time, 0, 5) }}]",
+                    "{{ $afternoon[0]->code }} – {{ $afternoon[0]->title }} [{{ substr($afternoon[0]->start_time, 0, 5) }}–{{ substr($afternoon[0]->end_time, 0, 5) }}]"
+                ]'>
+                            BND-01 – {{ $morning[0]->code }} + {{ $afternoon[0]->code }}
+                            [07:30–12:30 & 13:30–18:00]
+                        </option>
+
+                        <option value="{{ $morning[1]->id }},{{ $afternoon[1]->id }}" data-items='[
+                    "{{ $morning[1]->code }} – {{ $morning[1]->title }} [{{ substr($morning[1]->start_time, 0, 5) }}–{{ substr($morning[1]->end_time, 0, 5) }}]",
+                    "{{ $afternoon[1]->code }} – {{ $afternoon[1]->title }} [{{ substr($afternoon[1]->start_time, 0, 5) }}–{{ substr($afternoon[1]->end_time, 0, 5) }}]"
+                ]'>
+                            BND-02 – {{ $morning[1]->code }} + {{ $afternoon[1]->code }}
+                            [07:30–12:30 & 13:30–18:00]
+                        </option>
+                    @endif
                 </select>
 
-                {{-- AFTERNOON --}}
-                <select name="workshops[]" id="workshopAfternoonSelect" class="form-select">
-                    <option value="">Choose Afternoon Workshop</option>
-                    @foreach ($workshops as $ws)
-                        @if ($ws->start_time >= '12:00:00')
-                            <option value="{{ $ws->id }}">
-                                {{ $ws->code }} – {{ $ws->title }}
-                                [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
-                            </option>
-                        @endif
-                    @endforeach
-                </select>
+                {{-- INFO BUNDLING --}}
+                <div id="bundlingInfo" class="mt-2 d-none">
+                    <div class="border rounded-3 p-2 bg-light">
+                        <div class="small text-muted fw-semibold mb-1">
+                            Bundling includes
+                        </div>
 
-                <div class="form-text mt-1">
-                    Select <b>1 morning</b> and <b>1 afternoon</b> workshop.
+                        <div id="bundlingInfoList" class="d-flex flex-column gap-1"></div>
+                    </div>
                 </div>
+
             </div>
-
-
 
 
 
@@ -227,93 +229,88 @@
 
                 const symposium = document.getElementById('symposiumSection')
                 const workshopSingle = document.getElementById('workshopSingle')
-                const workshopDouble = document.getElementById('workshopDouble')
+                const workshopBundling = document.getElementById('workshopBundling')
 
-                const wsSingle = document.getElementById('workshopSingleSelect')
-                const wsMorning = document.getElementById('workshopMorningSelect')
-                const wsAfternoon = document.getElementById('workshopAfternoonSelect')
+                const workshopSingleSelect = document.getElementById('workshopSingleSelect')
+                const workshopBundlingSelect = document.getElementById('workshopBundlingSelect')
+
+                const bundlingInfo = document.getElementById('bundlingInfo')
+                const bundlingInfoList = document.getElementById('bundlingInfoList')
+
+                workshopBundlingSelect.addEventListener('change', function() {
+
+                    bundlingInfoList.innerHTML = ''
+                    bundlingInfo.classList.add('d-none')
+
+                    const selected = this.options[this.selectedIndex]
+                    const items = selected?.dataset?.items
+
+                    if (!items) return
+
+
+                    console.log('items');
+                    console.log(items);
+
+                    JSON.parse(items).forEach(text => {
+
+                        console.log('text')
+                        console.log(text)
+
+                        const wrapper = document.createElement('div')
+                        wrapper.className = 'bundling-item'
+
+                        const badge = document.createElement('span')
+                        badge.className = 'bundling-badge'
+                        badge.innerText = text.startsWith('WS-01') || text.startsWith('WS-02') ?
+                            'Morning' :
+                            'Afternoon'
+
+                        const content = document.createElement('div')
+                        content.innerHTML = `
+            <div class="fw-semibold">${text.split('[')[0]}</div>
+            <div class="bundling-time">(${text.split('[')[1]}</div>
+        `
+
+                        wrapper.appendChild(badge)
+                        wrapper.appendChild(content)
+
+                        bundlingInfoList.appendChild(wrapper)
+                    })
+
+                    bundlingInfo.classList.remove('d-none')
+                })
+
 
                 const loading = document.getElementById('cardLoading')
+
                 const form = document.querySelector('form')
                 const submitBtn = document.getElementById('submitBtn')
 
-                let locked = false
+                form.addEventListener('submit', function() {
 
-                /* ===============================
-                 * SUBMIT WITH SWEETALERT CONFIRM
-                 * =============================== */
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault()
+                    // 🔒 LOCK BUTTON
+                    submitBtn.disabled = true
+                    submitBtn.innerHTML = 'Processing…'
 
-                    if (locked) return
+                    // 🔒 SHOW LOADING OVERLAY
+                    // loading.classList.remove('d-none')
 
-                    // Build summary text
-                    let workshopText = '-'
-                    if (packageType.value === '2') {
-                        workshopText = wsSingle.options[wsSingle.selectedIndex]?.text ?? '-'
-                    }
-                    if (packageType.value === '3') {
-                        const m = wsMorning.options[wsMorning.selectedIndex]?.text ?? '-'
-                        const a = wsAfternoon.options[wsAfternoon.selectedIndex]?.text ?? '-'
-                        workshopText = `
-                <div class="small">
-                    <b>Morning:</b><br>${m}<br><br>
-                    <b>Afternoon:</b><br>${a}
-                </div>
-            `
-                    }
-
-                    Swal.fire({
-                        title: 'Confirm Package Purchase',
-                        html: `
-                <div class="text-start small">
-                    <p><b>Package Type:</b><br>${packageType.options[packageType.selectedIndex].text}</p>
-                    <p><b>Workshop:</b><br>${workshopText}</p>
-                    <p><b>Price:</b><br>${priceInput.value}</p>
-                    <hr>
-                    <p class="text-danger mb-0">
-                        After continuing, you will proceed to payment.
-                    </p>
-                </div>
-            `,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes, Continue',
-                        cancelButtonText: 'Cancel',
-                        confirmButtonColor: '#dc3545',
-                        reverseButtons: true
-                    }).then(result => {
-                        if (!result.isConfirmed) return
-
-                        locked = true
-
-                        submitBtn.disabled = true
-                        submitBtn.innerHTML = 'Processing…'
-
-                        form.submit()
-                    })
                 })
 
-                /* ===============================
-                 * RESET SECTION
-                 * =============================== */
+
                 const resetSections = () => {
                     symposium.classList.add('d-none')
                     workshopSingle.classList.add('d-none')
-                    workshopDouble.classList.add('d-none')
+                    workshopBundling.classList.add('d-none')
 
-                    wsSingle.required = false
-                    wsMorning.required = false
-                    wsAfternoon.required = false
+                    workshopSingleSelect.required = false
+                    workshopBundlingSelect.required = false
 
-                    wsSingle.disabled = true
-                    wsMorning.disabled = true
-                    wsAfternoon.disabled = true
+                    workshopSingleSelect.disabled = true
+                    workshopBundlingSelect.disabled = true
                 }
 
-                /* ===============================
-                 * PACKAGE TYPE CHANGE
-                 * =============================== */
+
                 packageType.addEventListener('change', async function() {
 
                     const type = this.value
@@ -322,6 +319,7 @@
 
                     if (!type) return
 
+                    // 🔄 SHOW LOADING
                     loading.classList.remove('d-none')
 
                     try {
@@ -337,40 +335,38 @@
 
                         const data = await res.json()
 
+                        // 💰 SET PRICE
                         priceInput.value =
                             'Rp ' + new Intl.NumberFormat('id-ID').format(data.price) +
                             ` (${data.bird_type.toUpperCase()} BIRD)`
 
+                        // ✅ AFTER PRICE LOADED → SHOW FIELDS
                         symposium.classList.remove('d-none')
 
                         if (type === '2') {
                             workshopSingle.classList.remove('d-none')
-                            wsSingle.required = true
-                            wsSingle.disabled = false
+                            workshopSingleSelect.required = true
+                            workshopSingleSelect.disabled = false
                         }
 
                         if (type === '3') {
-                            workshopDouble.classList.remove('d-none')
-                            wsMorning.required = true
-                            wsAfternoon.required = true
-                            wsMorning.disabled = false
-                            wsAfternoon.disabled = false
+                            workshopBundling.classList.remove('d-none')
+                            workshopBundlingSelect.required = true
+                            workshopBundlingSelect.disabled = false
                         }
+
 
                     } catch (err) {
                         console.error(err)
                         priceInput.value = 'Rp -'
                     } finally {
+                        // 🧹 HIDE LOADING
                         loading.classList.add('d-none')
                     }
                 })
-
             })
         </script>
     @endpush
-
-
-
 
 
 

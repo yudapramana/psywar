@@ -5,6 +5,15 @@
 
 @section('content')
 
+    {{-- FLASH INFO MESSAGE --}}
+    @if (session('info'))
+        <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+
     @php
         $p = $participant;
         $price = $registration?->pricingItem;
@@ -141,27 +150,28 @@
                         {{-- ACTION BUTTON --}}
                         @switch($registration->payment_step)
                             @case('choose_bank')
-                                <a href="{{ route('dashboard.payment.choose-bank', $registration->id) }}" class="btn btn-danger w-100 mt-3">
+                                <a href="{{ route('dashboard.payment.choose-bank') }}" class="btn btn-danger w-100 mt-3">
                                     Choose Bank →
                                 </a>
                             @break
 
                             @case('waiting_transfer')
-                                <a href="{{ route('dashboard.payment.transfer', $registration->id) }}" class="btn btn-danger w-100 mt-3">
+                                <a href="{{ route('dashboard.payment.transfer') }}" class="btn btn-danger w-100 mt-3">
                                     View Transfer Detail →
                                 </a>
                             @break
 
                             @case('waiting_verification')
-                                <div class="alert alert-warning mt-3 text-center mb-0">
+                                {{-- <div class="alert alert-warning mt-3 text-center mb-0"> --}}
+                                <a href="{{ route('dashboard.payment.upload-proof') }}" class="btn btn-warning w-100 mt-3">
                                     Payment is being verified by admin
-                                </div>
+                                </a>
                             @break
 
                             @case('paid')
-                                <div class="alert alert-success mt-3 text-center mb-0">
+                                <a href="{{ route('dashboard.payment.completed') }}" class="btn btn-success w-100 mt-3">
                                     Payment completed ✔
-                                </div>
+                                </a>
                             @break
                         @endswitch
                     </div>

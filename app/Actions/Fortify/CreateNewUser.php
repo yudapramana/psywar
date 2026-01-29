@@ -134,6 +134,8 @@ class CreateNewUser implements CreatesNewUsers
             'registration_type'      => $input['registration_type'],
         ]);
 
+        EmailVerification::where('email', $input['email'])->delete();
+
         return $user;
     }
 }

@@ -58,6 +58,12 @@
             font-size: .8rem;
             color: #6c757d;
         }
+
+        /* ⛔ ANTI SPAM */
+        .btn-loading {
+            pointer-events: none;
+            opacity: .8;
+        }
     </style>
 
     <div class="auth-card">
@@ -81,7 +87,6 @@
         @include('dashboard._partials.payment-stepper', [
             'currentStep' => 'waiting_transfer',
         ])
-
 
         {{-- PAYMENT DETAIL --}}
         <div class="mb-4">
@@ -117,33 +122,58 @@
 
             <div class="bank-box">
                 <div class="bank-name mb-1">
-                    {{ $registration->bank_name }}
+                    {{ $registration->bank->name }}
                 </div>
 
                 <div class="bank-number mb-1" id="bankNumber">
-                    {{ $registration->account_number }}
+                    {{ $registration->bank->account_number }}
                 </div>
 
                 <div class="fw-semibold mb-2">
-                    a.n. {{ $registration->account_name }}
+                    a.n. {{ $registration->bank->account_name }}
                 </div>
 
-                <button type="button" class="btn btn-outline-secondary copy-btn" onclick="navigator.clipboard.writeText('{{ $registration->account_number }}')">
+                <button type="button" class="btn btn-outline-secondary copy-btn" onclick="navigator.clipboard.writeText('{{ $registration->bank->account_number }}')">
                     Copy Account Number
                 </button>
             </div>
 
             <div class="note mt-2">
                 Please transfer the <b>exact amount</b> including the unique code
-                for manual verification.
+                for verification.
             </div>
         </div>
 
         {{-- ACTION --}}
-        <a href="{{ route('dashboard.payment.upload-proof', $registration->id) }}" class="btn btn-auth w-100">
+        <button id="uploadBtn" type="button" class="btn btn-auth w-100" data-url="{{ route('dashboard.payment.upload-proof', $registration->id) }}">
             Upload Payment Proof →
-        </a>
+        </button>
 
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const btn = document.getElementById('uploadBtn')
+            let clicked = false
+
+            btn.addEventListener('click', () => {
+
+                if (clicked) return
+
+                clicked = true
+                btn.classList.add('btn-loading')
+                btn.disabled = true
+                btn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Redirecting...
+                `
+
+                window.location.href = btn.dataset.url
+            })
+        })
+    </script>
+@endpush

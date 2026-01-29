@@ -12,10 +12,59 @@
         }
 
 
-        .session-box small {
-            display: block;
-            line-height: 1.3;
+        /* ================= FINAL SESSION BOX FIX ================= */
+        .session-cell {
+            position: relative;
+            padding: 6px !important;
+            /* sedikit diperbesar */
+            vertical-align: top;
         }
+
+        .session-cell>.session-box {
+            position: absolute;
+            inset: 6px;
+            /* jarak aman dari border */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* center horizontal */
+            text-align: center;
+
+            border-radius: 6px;
+            box-sizing: border-box;
+
+            /* 🔑 ANTI OFFSIDE */
+            overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        /* Judul */
+        .session-box strong {
+            font-size: 13px;
+            line-height: 1.3;
+            display: block;
+            max-width: 100%;
+        }
+
+        .session-box strong {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+
+        /* Subtitle & waktu */
+        .session-box small {
+            font-size: 11px;
+            line-height: 1.25;
+            opacity: 0.9;
+            max-width: 100%;
+        }
+
 
         /* ================= STICKY TIME ================= */
         .meeting-glance th.time-col,
@@ -68,9 +117,9 @@
 background-image:
 linear-gradient(
     135deg,
-    rgba(11, 28, 61, 0.23) 0%,
-    rgba(18, 58, 130, 0.23) 45%,
-    rgba(128, 20, 40, 0.23) 100%
+    rgba(11, 28, 61, 0.47) 0%,
+    rgba(18, 58, 130, 0.47) 45%,
+    rgba(128, 20, 40, 0.47) 100%
 ),
 url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent1.jpg') }}');
 background-size: cover;

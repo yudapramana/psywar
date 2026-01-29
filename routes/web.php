@@ -11,6 +11,8 @@ use App\Http\Controllers\Dashboard\BuyPackageController;
 use App\Http\Controllers\Dashboard\MyPackageController;
 use App\Http\Controllers\Dashboard\MyScheduleController;
 use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\Dashboard\SubmissionController;
+use App\Http\Controllers\EScienceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,16 @@ use App\Http\Controllers\Dashboard\PaymentController;
 
 
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
+
+    Route::get(
+        '/submissions/{paper}/download',
+        [SubmissionController::class, 'download']
+    )->name('submissions.download');
+
+    Route::get(
+        '/submissions/{paper}/preview',
+        [SubmissionController::class, 'previewPdf']
+    )->name('submissions.preview');
 
     Route::get('/my-package', [MyPackageController::class, 'index'])
         ->middleware('auth')
@@ -71,6 +83,38 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
     Route::get('/completed', [PaymentController::class,'completed'])
         ->name('dashboard.payment.completed');
+
+
+       
+
+    // Route::get('/submission', [SubmissionController::class, 'index'])->name('dashboard.submission.index');
+    // Route::get('/submission/create', [SubmissionController::class, 'create'])->name('dashboard.submission.create');
+    // Route::post('/submission', [SubmissionController::class, 'store'])->name('dashboard.submission.store');
+    // Route::get('/submission/{paper}', [SubmissionController::class, 'show'])->name('dashboard.submission.show');
+    // Route::delete('/submission/{paper}', [SubmissionController::class, 'destroy'])->name('dashboard.submission.destroy');
+
+    Route::prefix('submission')->name('dashboard.submission.')->group(function () {
+
+        // LIST & CREATE
+        Route::get('/', [SubmissionController::class, 'index'])->name('index');
+        Route::get('/create', [SubmissionController::class, 'create'])->name('create');
+        Route::post('/', [SubmissionController::class, 'store'])->name('store');
+
+        // DETAIL
+        Route::get('/{paper}', [SubmissionController::class, 'show'])->name('show');
+
+        // ✏️ EDIT DRAFT
+        Route::get('/{paper}/edit', [SubmissionController::class, 'edit'])->name('edit');
+        Route::put('/{paper}', [SubmissionController::class, 'update'])->name('update');
+
+        // 🚀 SUBMIT FINAL (LOCK AFTER)
+        Route::post('/{paper}/submit', [SubmissionController::class, 'submit'])
+            ->name('submit');
+
+        // 🗑 DELETE (DRAFT ONLY)
+        Route::delete('/{paper}', [SubmissionController::class, 'destroy'])
+            ->name('destroy');
+    });
 });
 
 
@@ -89,10 +133,21 @@ Route::get('/captcha', [CaptchaController::class, 'generate'])
 
 Route::get('/venue', fn () => view('pages.venue'))->name('venue');
 
-Route::get('/e-science/abstracts-cases-submission', function () {
-    return view('pages.abstract-case-submission');
-})->name('escience.abstracts-cases-submission');
+// Route::get('/e-science/abstracts-cases-submission', function () {
+//     return view('pages.abstract-case-submission');
+// })->name('escience.abstracts-cases-submission');
 
+Route::prefix('e-science')->name('escience.')->group(function () {
+
+    Route::get('/abstracts-cases-submission',
+        [EScienceController::class, 'submission']
+    )->name('abstracts-cases-submission');
+
+    Route::get('/accepted-research-case',
+        [EScienceController::class, 'accepted']
+    )->name('accepted-research-case');
+
+});
 
 Route::get('/', function () {
     return view('pages.landing');

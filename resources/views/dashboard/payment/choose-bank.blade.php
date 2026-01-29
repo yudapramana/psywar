@@ -34,6 +34,12 @@
             font-size: .85rem;
             color: #6c757d;
         }
+
+        /* ⛔ DISABLED STATE */
+        .btn-loading {
+            pointer-events: none;
+            opacity: .75;
+        }
     </style>
 
     <div class="auth-card">
@@ -56,9 +62,8 @@
             'currentStep' => 'choose_bank',
         ])
 
-
         {{-- FORM --}}
-        <form method="POST" action="{{ route('dashboard.payment.store-bank') }}">
+        <form id="chooseBankForm" method="POST" action="{{ route('dashboard.payment.store-bank') }}">
             @csrf
 
             <div class="d-flex flex-column gap-2 mb-4">
@@ -67,21 +72,78 @@
                         <input type="radio" name="bank_id" value="{{ $bank->id }}" required>
 
                         <div>
-                            <div class="bank-code">
-                                {{ $bank->code }}
-                            </div>
-                            <div class="bank-name">
-                                {{ $bank->name }}
-                            </div>
+                            <div class="bank-code">{{ $bank->code }}</div>
+                            <div class="bank-name">{{ $bank->name }}</div>
                         </div>
                     </label>
                 @endforeach
             </div>
 
-            <button class="btn btn-auth w-100">
+            <div class="alert alert-light border small mb-3">
+                <strong>Note:</strong><br>
+                The payment amount is fixed after registration.
+                You may change the bank account, but please transfer the exact amount shown on the next page.
+            </div>
+
+
+            <button id="submitBtn" type="submit" class="btn btn-auth w-100">
                 Continue →
             </button>
         </form>
 
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+
+                /* ===============================
+                 * SUCCESS TOAST AFTER BUY PACKAGE
+                 * =============================== */
+                @if (session('success'))
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: @json(session('success')),
+                        showConfirmButton: false,
+                        timer: 3500,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+                @endif
+
+                /* ===============================
+                 * EXISTING SUBMIT LOCK
+                 * =============================== */
+                const form = document.getElementById('chooseBankForm')
+                const btn = document.getElementById('submitBtn')
+
+                let submitted = false
+
+                form.addEventListener('submit', (event) => {
+
+                    if (submitted) {
+                        event.preventDefault()
+                        return
+                    }
+
+                    submitted = true
+
+                    btn.disabled = true
+                    btn.classList.add('btn-loading')
+                    btn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Processing...
+        `
+                })
+            })
+        </script>
+    @endpush
+
+
+
 @endsection

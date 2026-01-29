@@ -9,9 +9,9 @@
         background-image:
         linear-gradient(
             135deg,
-            rgba(11, 28, 61, 0.23) 0%,
-            rgba(18, 58, 130, 0.23) 45%,
-            rgba(128, 20, 40, 0.23) 100%
+            rgba(11, 28, 61, 0.47) 0%,
+            rgba(18, 58, 130, 0.47) 45%,
+            rgba(128, 20, 40, 0.47) 100%
         ),
         url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent4.jpg') }}');
         background-size: cover;
@@ -51,7 +51,7 @@
                                 <i class="bi bi-calendar-event"></i>
                                 <div>
                                     <small class="text-muted">Deadline for abstract submission</small>
-                                    <div class="fw-semibold">15 June 2026</div>
+                                    <div class="fw-semibold">20 May 2026</div>
                                 </div>
                             </div>
 
@@ -59,7 +59,7 @@
                                 <i class="bi bi-bell"></i>
                                 <div>
                                     <small class="text-muted">Notification of acceptance</small>
-                                    <div class="fw-semibold">20 June 2026</div>
+                                    <div class="fw-semibold">25 May 2026</div>
                                 </div>
                             </div>
 
@@ -107,12 +107,12 @@
                     <ul class="list-unstyled ps-3">
                         <li class="mb-2">
                             ✓ All Case and Research must be submitted and received before
-                            <strong>15 June 2026</strong>.
+                            <strong>20 May 2026</strong>.
                         </li>
                         <li class="mb-2">
                             ✓ Poster and Case competition for Medical Professionals
                             (Nurse, Technician, Radiographer, Pharmacists)
-                            must be submitted before <strong>12 June 2026</strong>.
+                            must be submitted before <strong>15 May 2026</strong>.
                         </li>
                     </ul>
 
