@@ -224,6 +224,7 @@ background-position: center;
                                                         } else {
                                                             echo 's->room_id:' . $s->room_id . ', room->id: ' . $room->id . '<br>';
                                                         }
+                                                        echo gettype($s->room_id) . ' | ' . gettype($room->id);
 
                                                         $ss = \Carbon\Carbon::parse($s->start_time)->format('H:i');
                                                         $se = \Carbon\Carbon::parse($s->end_time)->format('H:i');
