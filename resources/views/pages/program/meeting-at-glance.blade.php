@@ -221,12 +221,17 @@ background-position: center;
                                                     $session = $day->sessions->first(function ($s) use ($room, $slotStart, $slotEnd) {
                                                         if ($s->room_id !== $room->id) {
                                                             return false;
+                                                        } else {
+                                                            echo 's->room_id:' . $s->room_id . ', room->id: ' . $room->id . '<br>';
                                                         }
 
-                                                        $ss = \Carbon\Carbon::parse($s->start_time);
-                                                        $se = \Carbon\Carbon::parse($s->end_time);
+                                                        $ss = \Carbon\Carbon::parse($s->start_time)->format('H:i');
+                                                        $se = \Carbon\Carbon::parse($s->end_time)->format('H:i');
 
-                                                        return $ss < $slotEnd && $se > $slotStart;
+                                                        $slotS = $slotStart->format('H:i');
+                                                        $slotE = $slotEnd->format('H:i');
+
+                                                        return $ss < $slotE && $se > $slotS;
                                                     });
 
                                                     if (!$session) {
