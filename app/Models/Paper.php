@@ -11,6 +11,7 @@ class Paper extends Model
 
     protected $casts = [
         'submitted_at' => 'datetime',
+        'participant_id' => 'integer',
     ];
 
     public function getRouteKeyName()
