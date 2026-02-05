@@ -208,6 +208,11 @@
                     Sending OTP code...
                 </small>
 
+                <small id="checkEmailHint" class="text-info d-none mt-1">
+                    Please check your email inbox (and spam folder) for the OTP code.
+                </small>
+
+
                 <small id="emailError" class="text-danger d-none mt-1"></small>
                 <small id="emailStatus" class="text-success d-none mt-1">
                     Email verified
@@ -406,6 +411,7 @@
             sendOtpBtn.disabled = true
             emailInput.readOnly = true
             emailLoading.classList.remove('d-none')
+
             sendOtpBtn.innerHTML = `
                                 <span class="spinner-border spinner-border-sm me-1"></span>
                                 Sending...
@@ -432,6 +438,7 @@
                 }
 
                 // ✅ SUCCESS
+                document.getElementById('checkEmailHint').classList.remove('d-none')
                 otpSection.classList.remove('d-none')
                 startTimer()
 
