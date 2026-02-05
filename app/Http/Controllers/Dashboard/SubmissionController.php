@@ -14,9 +14,12 @@ use App\Models\PaperAuthor;
 use Illuminate\Support\Str;
 use ZipArchive;
 use Symfony\Component\HttpFoundation\Response;
+use Carbon\Carbon;
 
 class SubmissionController extends Controller
 {
+    
+
     /**
      * Display submission page (list or locked state)
      */
@@ -26,28 +29,66 @@ class SubmissionController extends Controller
         abort_if(!$participant, 403, 'Participant profile not found.');
 
         $event = Event::where('is_active', true)->firstOrFail();
+        $now = Carbon::now();
 
-        // 🔒 Hanya peserta PAID
+        // =========================
+        // SUBMISSION STATUS (SAMA DENGAN HALAMAN PUBLIK)
+        // =========================
+        if (! $event->submission_open_at || ! $event->submission_deadline_at) {
+            $submissionStatus = 'closed';
+        } elseif ($now->lt($event->submission_open_at)) {
+            $submissionStatus = 'not_open';
+        } elseif ($now->gt($event->submission_deadline_at)) {
+            $submissionStatus = 'closed';
+        } else {
+            // $now berada di antara open_at dan deadline_at (inclusive)
+            $submissionStatus = 'open';
+        }
+
+        // =========================
+        // LOCK JIKA BELUM / SUDAH TUTUP
+        // =========================
+        if ($submissionStatus === 'not_open') {
+            return view('dashboard.submission.locked', compact(
+                'event',
+                'submissionStatus'
+            ));
+        }
+
+        // =========================
+        // HANYA PESERTA PAID
+        // =========================
         $registration = Registration::where('participant_id', $participant->id)
             ->where('event_id', $event->id)
             ->where('status', 'paid')
             ->first();
 
-        if (!$registration) {
-            return view('dashboard.submission.locked');
+        if (! $registration) {
+            return view('dashboard.submission.locked', compact(
+                'event',
+                'submissionStatus'
+            ));
         }
 
+        // =========================
+        // DATA SUBMISSION
+        // =========================
         $papers = Paper::with(['paperType', 'authors'])
             ->where('participant_id', $participant->id)
             ->latest()
             ->get();
 
-
         $submissionCount = $papers->count();
 
-        return view('dashboard.submission.index', compact('papers', 'registration', 'submissionCount'));
-
+        return view('dashboard.submission.index', compact(
+            'papers',
+            'registration',
+            'submissionCount',
+            'event',
+            'submissionStatus'
+        ));
     }
+
 
     /**
      * Show submission form
@@ -135,13 +176,47 @@ class SubmissionController extends Controller
                 }
             ],
 
-            // 🔐 FILE VALIDATION (COMPATIBLE)
-            'file' => [
+            // ✅ GOOGLE DRIVE LINK
+            'gdrive_link' => [
                 'required',
-                'file',
-                'max:10240', // 10 MB
-                'mimes:pdf,doc,docx',
+                'url',
+                function ($attr, $value, $fail) {
+
+                    // =========================
+                    // 1️⃣ HOST WHITELIST
+                    // =========================
+                    $allowedHosts = [
+                        'drive.google.com',
+                        'docs.google.com',
+                    ];
+
+                    $host = parse_url($value, PHP_URL_HOST);
+
+                    if (!$host || !in_array($host, $allowedHosts)) {
+                        $fail('Only Google Drive links are allowed.');
+                        return;
+                    }
+
+                    // =========================
+                    // 2️⃣ WAJIB usp=sharing
+                    // =========================
+                    if (!str_contains($value, 'usp=sharing')) {
+                        $fail('Please set access to "Anyone with the link (Viewer)".');
+                        return;
+                    }
+
+                    // =========================
+                    // 3️⃣ FORMAT FILE DRIVE (/file/d/)
+                    // =========================
+                    // Contoh valid:
+                    // https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+                    if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
+                        $fail('Invalid Google Drive file link format.');
+                        return;
+                    }
+                }
             ],
+
 
             'authors'                    => 'required|array|min:1',
             'authors.*.name'             => 'required|string|max:255',
@@ -151,74 +226,6 @@ class SubmissionController extends Controller
         ]);
 
         // =========================
-        // FILE CONTENT VERIFICATION
-        // =========================
-        $file = $request->file('file');
-        $mime = $file->getMimeType();
-
-        $allowedMime = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-
-        if (!in_array($mime, $allowedMime)) {
-            return back()
-                ->withErrors(['file' => 'Invalid or corrupted file detected.'])
-                ->withInput();
-        }
-
-        // 🔐 PDF HEADER CHECK
-        if ($mime === 'application/pdf') {
-            $fh = fopen($file->getPathname(), 'rb');
-            $header = fread($fh, 4);
-            fclose($fh);
-
-            if ($header !== '%PDF') {
-                return back()
-                    ->withErrors(['file' => 'Invalid PDF file structure.'])
-                    ->withInput();
-            }
-        }
-
-        // 🔐 DOCX ZIP STRUCTURE CHECK
-        if ($mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            $zip = new ZipArchive;
-
-            if ($zip->open($file->getPathname()) !== true) {
-                return back()
-                    ->withErrors(['file' => 'Invalid DOCX file.'])
-                    ->withInput();
-            }
-
-            if ($zip->locateName('word/document.xml') === false) {
-                $zip->close();
-                return back()
-                    ->withErrors(['file' => 'Invalid DOCX structure.'])
-                    ->withInput();
-            }
-
-            $zip->close();
-        }
-
-        // =========================
-        // STORE FILE (PRIVATE DISK)
-        // =========================
-        $extension = strtolower($file->extension());
-        $fileType  = $extension === 'pdf' ? 'pdf' : 'docx';
-
-        $filename = 'paper_' .
-            $participant->id . '_' .
-            Str::uuid() . '.' .
-            $extension;
-
-        $path = $file->storeAs(
-            'papers',
-            $filename,
-            'private' // 🔒 PRIVATE STORAGE
-        );
-
-        // =========================
         // CREATE PAPER (DRAFT)
         // =========================
         $paper = Paper::create([
@@ -226,11 +233,12 @@ class SubmissionController extends Controller
             'paper_type_id'  => $validated['paper_type_id'],
             'title'          => $validated['title'],
             'abstract'       => $validated['abstract'],
-            'file_path'      => $path,
-            'file_type'      => $fileType,
+            'gdrive_link'    => $validated['gdrive_link'],
+            'file_type'      => str_contains($validated['gdrive_link'], '.pdf') ? 'pdf' : 'docx',
             'status'         => 'draft',
             'submitted_at'   => null,
         ]);
+
 
         // =========================
         // AUTHORS
@@ -296,10 +304,6 @@ class SubmissionController extends Controller
             return back()->with('warning', 'This submission can no longer be deleted.');
         }
 
-        if ($paper->file_path) {
-            Storage::disk('public')->delete($paper->file_path);
-        }
-
         $paper->delete();
 
         return redirect()
@@ -320,7 +324,7 @@ class SubmissionController extends Controller
         ]);
 
         return redirect()
-            ->route('dashboard.submission.show', $paper->id)
+            ->route('dashboard.submission.show', $paper->uuid)
             ->with('success', 'Paper successfully submitted.');
     }
 
@@ -425,7 +429,7 @@ class SubmissionController extends Controller
         }
 
         return redirect()
-            ->route('dashboard.submission.edit', $paper->id)
+            ->route('dashboard.submission.edit', $paper->uuid)
             ->with('success', 'Draft updated successfully.');
     }
 
@@ -435,38 +439,11 @@ class SubmissionController extends Controller
     public function download(Paper $paper)
     {
         $participant = auth()->user()->participant;
+        abort_if($paper->participant_id !== $participant->id, 403);
 
-        // =========================
-        // 🔒 AUTHORIZATION (IDOR PROTECTION)
-        // =========================
-        abort_if(
-            !$participant || $paper->participant_id !== $participant->id,
-            Response::HTTP_FORBIDDEN
-        );
-
-        // =========================
-        // 🔍 FILE EXISTENCE CHECK
-        // =========================
-        if (!Storage::disk('private')->exists($paper->file_path)) {
-            abort(404, 'File not found.');
-        }
-
-        // =========================
-        // 🧼 SAFE FILENAME
-        // =========================
-        $safeFilename = Str::slug($paper->title);
-        $extension    = $paper->file_type;
-
-        $downloadName = "{$safeFilename}.{$extension}";
-
-        // =========================
-        // ⬇️ DOWNLOAD (STREAMED)
-        // =========================
-        return Storage::disk('private')->download(
-            $paper->file_path,
-            $downloadName
-        );
+        return redirect()->away($paper->gdrive_link);
     }
+
 
 
    

@@ -47,27 +47,44 @@
 
                             <h5 class="fw-bold mb-3">Submission</h5>
 
+                            {{-- DEADLINE --}}
                             <div class="submission-item mb-3">
                                 <i class="bi bi-calendar-event"></i>
                                 <div>
                                     <small class="text-muted">Deadline for abstract submission</small>
-                                    <div class="fw-semibold">20 May 2026</div>
+                                    <div class="fw-semibold">
+                                        {{ optional($event->submission_deadline_at)->format('d F Y') }}
+                                    </div>
                                 </div>
                             </div>
 
+                            {{-- NOTIFICATION --}}
                             <div class="submission-item mb-3">
                                 <i class="bi bi-bell"></i>
                                 <div>
                                     <small class="text-muted">Notification of acceptance</small>
-                                    <div class="fw-semibold">25 May 2026</div>
+                                    <div class="fw-semibold">
+                                        {{ optional($event->notification_date)->format('d F Y') }}
+                                    </div>
                                 </div>
                             </div>
 
                             {{-- STATUS --}}
-                            <div class="alert alert-success text-center fw-semibold mb-3">
-                                Submission is open
-                            </div>
+                            @if ($submissionStatus === 'not_open')
+                                <div class="alert alert-secondary text-center fw-semibold mb-3">
+                                    Submission not open yet
+                                </div>
+                            @elseif ($submissionStatus === 'open')
+                                <div class="alert alert-success text-center fw-semibold mb-3">
+                                    Submission is open
+                                </div>
+                            @else
+                                <div class="alert alert-danger text-center fw-semibold mb-3">
+                                    Submission is closed
+                                </div>
+                            @endif
 
+                            {{-- GUIDELINE --}}
                             <a href="{{ asset('downloads/abstract-submission-guidelines.pdf') }}" class="btn btn-outline-primary w-100">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Abstract Submission Guidelines
@@ -75,6 +92,7 @@
 
                         </div>
                     </div>
+
 
                 </div>
 

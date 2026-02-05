@@ -252,7 +252,7 @@ class PaymentController extends Controller
         $path = $file->storeAs(
             'payments/proofs',
             $filename,
-            'public' // change to 'private' if you use private disk
+            'private' // change to 'private' if you use private disk
         );
 
         // ======================================================

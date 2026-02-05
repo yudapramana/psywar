@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\MyScheduleController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\SubmissionController;
 use App\Http\Controllers\EScienceController;
+use App\Models\ServiceAccount;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,14 @@ use App\Http\Controllers\EScienceController;
 |
 */
 
+Route::middleware('auth:sanctum')->get('/debug-auth', function () {
+    $service = ServiceAccount::where('name', 'admin-app')->first();
+    dd($service->plainTextToken);
+});
+
+Route::get('/dashboard', function () {
+    return redirect()->route('dashboard.my-schedule');
+})->name('dashboard.index');
 
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
@@ -101,18 +110,18 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
         Route::post('/', [SubmissionController::class, 'store'])->name('store');
 
         // DETAIL
-        Route::get('/{paper}', [SubmissionController::class, 'show'])->name('show');
+        Route::get('/{paper:uuid}', [SubmissionController::class, 'show'])->name('show');
 
         // ✏️ EDIT DRAFT
-        Route::get('/{paper}/edit', [SubmissionController::class, 'edit'])->name('edit');
-        Route::put('/{paper}', [SubmissionController::class, 'update'])->name('update');
+        Route::get('/{paper:uuid}/edit', [SubmissionController::class, 'edit'])->name('edit');
+        Route::put('/{paper:uuid}', [SubmissionController::class, 'update'])->name('update');
 
         // 🚀 SUBMIT FINAL (LOCK AFTER)
-        Route::post('/{paper}/submit', [SubmissionController::class, 'submit'])
+        Route::post('/{paper:uuid}/submit', [SubmissionController::class, 'submit'])
             ->name('submit');
 
         // 🗑 DELETE (DRAFT ONLY)
-        Route::delete('/{paper}', [SubmissionController::class, 'destroy'])
+        Route::delete('/{paper:uuid}', [SubmissionController::class, 'destroy'])
             ->name('destroy');
     });
 });
@@ -183,11 +192,7 @@ Route::get('/speakers', function () {
     return view('pages.speakers');
 })->name('speakers');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    });
-});
+
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

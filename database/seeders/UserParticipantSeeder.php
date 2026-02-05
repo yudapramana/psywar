@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,7 @@ class UserParticipantSeeder extends Seeder
                 'name'       => 'Lathifatul Hamidah',
                 'email'      => 'lathifatul@gp.test',
                 'category'   => 'General Practitioner / Internship',
-                'institution'=> 'RSUD Dr. M. Djamil Padang',
+                'institution'=> 'Universitas Diponegoro',
             ],
             [
                 'name'       => 'Najmi Ilal Hayati',
@@ -52,6 +53,7 @@ class UserParticipantSeeder extends Seeder
             // ======================
             $nik = $this->generateNik($index);
             $phone = $this->generatePhone($index);
+            $role = Role::where('name', 'participant')->firstOrFail();
 
             // ======================
             // CREATE USER
@@ -61,7 +63,7 @@ class UserParticipantSeeder extends Seeder
                 'email'             => $data['email'],
                 'email_verified_at' => $now,
                 'password'          => Hash::make('password'),
-                'role_id'           => 1, // user biasa
+                'role_id'           => $role->id,
                 'remember_token'    => Str::random(10),
                 'created_at'        => $now,
                 'updated_at'        => $now,

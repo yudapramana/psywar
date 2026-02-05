@@ -95,6 +95,12 @@
                         {{ $message }}
                     </div>
                 @enderror
+
+                @error('email')
+                    <div class="text-danger text-sm mt-1">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
 
 

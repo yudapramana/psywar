@@ -17,6 +17,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use Illuminate\Validation\ValidationException;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -57,22 +58,38 @@ class FortifyServiceProvider extends ServiceProvider
             // ======================
             // VALIDASI CAPTCHA
             // ======================
-            if (!CaptchaController::validate($request->captcha)) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+            if (! CaptchaController::validate($request->captcha)) {
+                throw ValidationException::withMessages([
                     'captcha' => 'Captcha tidak sesuai.',
                 ]);
             }
 
             // ======================
-            // AUTHENTICATION
+            // AMBIL USER
             // ======================
-            $user = User::where('email', $request->email)->first();
+            $user = User::with('role')
+                ->where('email', $request->email)
+                ->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
-                return $user;
+            // ======================
+            // CEK ROLE (HARUS PARTICIPANT)
+            // ======================
+            if (! $user->role || $user->role->slug !== 'participant') {
+                throw ValidationException::withMessages([
+                    'email' => 'Akun ini bukan akun peserta.',
+                ]);
             }
 
-            return null;
+            if (! $user || ! Hash::check($request->password, $user->password)) {
+                return null;
+            }
+
+            
+
+            // ======================
+            // LOGIN BERHASIL
+            // ======================
+            return $user;
         });
 
         

@@ -162,10 +162,41 @@
                             @break
 
                             @case('waiting_verification')
-                                {{-- <div class="alert alert-warning mt-3 text-center mb-0"> --}}
-                                <a href="{{ route('dashboard.payment.upload-proof') }}" class="btn btn-warning w-100 mt-3">
-                                    Payment is being verified by admin
-                                </a>
+                                @php
+                                    $payment = $registration->payment;
+                                    $verification = $payment?->verification;
+                                @endphp
+
+                                {{-- STATUS: PENDING --}}
+                                @if ($payment && $payment->status === 'pending')
+                                    <div class="alert alert-warning mt-3 text-center mb-2">
+                                        <strong>Payment Under Review</strong><br>
+                                        Your payment is currently being verified by admin.
+                                    </div>
+
+                                    {{-- STATUS: REJECTED --}}
+                                @elseif ($payment && $payment->status === 'rejected')
+                                    <div class="alert alert-danger mt-3 mb-2">
+                                        <strong>Payment Rejected</strong><br>
+
+                                        @if ($verification?->notes)
+                                            <div class="small mt-1">
+                                                <strong>Admin Note:</strong><br>
+                                                {{ $verification->notes }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <a href="{{ route('dashboard.payment.upload-proof') }}" class="btn btn-danger w-100">
+                                        Upload Payment Proof Again →
+                                    </a>
+
+                                    {{-- STATUS: VERIFIED (edge case safety) --}}
+                                @elseif ($payment && $payment->status === 'verified')
+                                    <div class="alert alert-success mt-3 text-center mb-0">
+                                        Payment verified ✔
+                                    </div>
+                                @endif
                             @break
 
                             @case('paid')
@@ -173,6 +204,7 @@
                                     Payment completed ✔
                                 </a>
                             @break
+
                         @endswitch
                     </div>
                 </div>

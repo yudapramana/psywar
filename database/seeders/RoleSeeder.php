@@ -2,35 +2,64 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('roles')->insert([
+        $roles = [
+            // =========================
+            // SYSTEM LEVEL
+            // =========================
             [
-                'name' => 'superadmin',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'name' => 'SUPERADMIN',
+                'slug' => 'superadmin',
+            ],
+
+            // =========================
+            // ADMIN LEVEL
+            // =========================
+            [
+                'name' => 'MASTER_ADMIN',
+                'slug' => 'master_admin',
             ],
             [
-                'name' => 'admin',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'name' => 'FINANCE_ADMIN',
+                'slug' => 'finance_admin',
             ],
             [
-                'name' => 'committee',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'name' => 'CONTENT_ADMIN',
+                'slug' => 'content_admin',
             ],
             [
-                'name' => 'participant',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'name' => 'SCIENCE_ADMIN',
+                'slug' => 'science_admin',
             ],
-        ]);
+
+            // =========================
+            // OPERATIONAL
+            // =========================
+            [
+                'name' => 'COMMITTEE',
+                'slug' => 'committee',
+            ],
+
+            // =========================
+            // END USER
+            // =========================
+            [
+                'name' => 'PARTICIPANT',
+                'slug' => 'participant',
+            ],
+        ];
+
+        foreach ($roles as $role) {
+            Role::updateOrCreate(
+                ['slug' => $role['slug']],
+                ['name' => $role['name']]
+            );
+        }
     }
 }

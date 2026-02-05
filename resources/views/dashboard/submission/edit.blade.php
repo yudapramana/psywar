@@ -31,7 +31,7 @@
                         </div>
                     @endif
 
-                    <form id="editSubmissionForm" method="POST" action="{{ route('dashboard.submission.update', $paper->id) }}" enctype="multipart/form-data">
+                    <form id="editSubmissionForm" method="POST" action="{{ route('dashboard.submission.update', $paper->uuid) }}" enctype="multipart/form-data">
 
                         @csrf
                         @method('PUT')
@@ -160,10 +160,6 @@
                             </label>
 
                             <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-secondary text-uppercase">
-                                    {{ $paper->file_type }}
-                                </span>
-
                                 <a href="{{ route('submissions.download', $paper) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                     View / Download File →
                                 </a>

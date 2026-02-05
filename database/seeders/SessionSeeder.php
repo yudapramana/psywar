@@ -27,9 +27,9 @@ class SessionSeeder extends Seeder
         |=====================================================
         */
         $ballroom     = Room::where('name', 'BallRoom')->first();
-        $mulia9       = Room::where('name', 'Ruang Mulia 9')->first();
+        $mulia9       = Room::where('name', 'Ruang Mulia 09')->first();
         $mulia10      = Room::where('name', 'Ruang Mulia 10')->first();
-        $jeopardyRoom = Room::where('name', 'Ruang Mulia 2')->first();
+        $jeopardyRoom = Room::where('name', 'Ruang Mulia 02')->first();
 
         /*
         |=====================================================

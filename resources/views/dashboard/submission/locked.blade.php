@@ -6,39 +6,41 @@
 @section('content')
 
     <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-sm mt-4">
+                <div class="card-body text-center py-5">
 
-            <div class="card shadow-sm text-center">
+                    <h4 class="fw-bold mb-2">
+                        Submission Unavailable
+                    </h4>
 
-                <div class="card-body py-5">
+                    @if ($submissionStatus === 'not_open')
+                        <p class="text-muted">
+                            Submission has not opened yet.<br>
+                            It will open on
+                            <strong>
+                                {{ $event->submission_open_at?->format('d F Y') }}
+                            </strong>.
+                        </p>
+                    @else
+                        <p class="text-muted">
+                            Submission period has ended.<br>
+                            Deadline was
+                            <strong>
+                                {{ $event->submission_deadline_at?->format('d F Y') }}
+                            </strong>.
+                        </p>
+                    @endif
 
-                    {{-- ICON --}}
-                    <div class="mb-3">
-                        <i class="bi bi-lock-fill text-danger" style="font-size: 48px;"></i>
-                    </div>
-
-                    {{-- TITLE --}}
-                    <h5 class="fw-semibold mb-2">
-                        Submission Locked
-                    </h5>
-
-                    {{-- DESCRIPTION --}}
-                    <p class="text-muted mb-4">
-                        You need to complete your event registration before submitting
-                        an abstract or case report.
-                    </p>
-
-                    {{-- ACTION --}}
-                    <a href="{{ route('dashboard.buy-package') }}" class="btn btn-danger px-4">
-                        Buy Package →
+                    <a href="{{ route('dashboard.index') }}" class="btn btn-outline-secondary mt-3">
+                        ← Back to Dashboard
                     </a>
 
                 </div>
             </div>
 
         </div>
-
     </div>
 
 @endsection

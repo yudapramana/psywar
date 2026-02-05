@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Paper extends Model
 {
@@ -11,6 +12,20 @@ class Paper extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($paper) {
+            if (empty($paper->uuid)) {
+                $paper->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function participant()
     {

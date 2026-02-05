@@ -5,29 +5,78 @@
 
 @section('content')
 
+
+    <style>
+        .bg-purple {
+            background-color: #c6bbda !important;
+        }
+
+        .text-purple {
+            color: #5900ff !important;
+        }
+
+        .border-purple {
+            border-color: #6f42c1 !important;
+        }
+    </style>
     <div class="row g-4">
 
         <div class="col-12">
+
+            {{-- <div class="alert alert-light border mb-3">
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <div>
+                        <strong>Submission Period:</strong><br>
+                        {{ $event->submission_open_at?->format('d M Y') }}
+                        –
+                        {{ $event->submission_deadline_at?->format('d M Y') }}
+                    </div>
+
+                    <div>
+                        <strong>Status:</strong><br>
+                        @if ($submissionStatus === 'open')
+                            <span class="badge bg-success">Open</span>
+                        @else
+                            <span class="badge bg-danger">Closed</span>
+                        @endif
+                    </div>
+                </div>
+            </div> --}}
+
+
             <div class="card shadow-sm">
 
                 {{-- HEADER --}}
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div class="fw-semibold">
                         My Submissions
+                        @if ($submissionStatus === 'open')
+                            <span class="badge bg-success">Open</span>
+                        @else
+                            <span class="badge bg-danger">Closed</span>
+                        @endif
+
                         <span class="text-muted small">
                             ({{ $submissionCount }}/3)
                         </span>
                     </div>
 
-                    @if ($submissionCount < 3)
-                        <a href="{{ route('dashboard.submission.create') }}" class="btn btn-danger btn-sm">
-                            + Submit Abstract / Case
-                        </a>
+                    @if ($submissionStatus === 'open')
+                        @if ($submissionCount < 3)
+                            <a href="{{ route('dashboard.submission.create') }}" class="btn btn-danger btn-sm">
+                                + Submit Abstract / Case
+                            </a>
+                        @else
+                            <button class="btn btn-secondary btn-sm" disabled>
+                                Submission Limit Reached
+                            </button>
+                        @endif
                     @else
                         <button class="btn btn-secondary btn-sm" disabled>
-                            Submission Limit Reached
+                            Submission Closed
                         </button>
                     @endif
+
                 </div>
 
 
@@ -88,6 +137,7 @@
 
                                             {{-- META --}}
                                             <div class="d-flex flex-wrap gap-1 mt-1 align-items-center">
+
                                                 {{-- PAPER TYPE --}}
                                                 <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
                                                     {{ $paper->paperType->name }}
@@ -97,6 +147,17 @@
                                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 small">
                                                     {{ $paper->submitted_at?->format('d M Y') ?? 'Not submitted yet' }}
                                                 </span>
+
+                                                {{-- FINAL STATUS --}}
+                                                @if ($paper->final_status === 'oral_presentation')
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 small">
+                                                        Oral Presentation
+                                                    </span>
+                                                @elseif ($paper->final_status === 'poster_presentation')
+                                                    <span class="badge bg-purple bg-opacity-10 text-purple border border-purple border-opacity-25 small">
+                                                        Poster Presentation
+                                                    </span>
+                                                @endif
                                             </div>
 
 
@@ -116,21 +177,36 @@
                                             <div class="d-flex gap-1 flex-wrap justify-content-end">
 
                                                 @if ($paper->status === 'draft')
-                                                    <a href="{{ route('dashboard.submission.edit', $paper->id) }}" class="btn btn-outline-primary btn-sm">
-                                                        Edit
-                                                    </a>
+                                                    @if ($submissionStatus === 'open')
+                                                        {{-- EDIT --}}
+                                                        <a href="{{ route('dashboard.submission.edit', $paper->uuid) }}" class="btn btn-outline-primary btn-sm">
+                                                            Edit
+                                                        </a>
 
-                                                    <form method="POST" action="{{ route('dashboard.submission.submit', $paper->id) }}" class="submit-paper-form d-inline" data-title="{{ $paper->title }}">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm submit-paper-btn">
+                                                        {{-- SUBMIT --}}
+                                                        <form method="POST" action="{{ route('dashboard.submission.submit', $paper->uuid) }}" class="submit-paper-form d-inline" data-title="{{ $paper->title }}">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success btn-sm submit-paper-btn">
+                                                                Submit
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        {{-- EDIT DISABLED --}}
+                                                        <button class="btn btn-outline-secondary btn-sm" disabled title="Submission is closed">
+                                                            Edit
+                                                        </button>
+
+                                                        {{-- SUBMIT DISABLED --}}
+                                                        <button class="btn btn-secondary btn-sm" disabled title="Submission is closed">
                                                             Submit
                                                         </button>
-                                                    </form>
+                                                    @endif
                                                 @else
-                                                    <a href="{{ route('dashboard.submission.show', $paper->id) }}" class="btn btn-outline-secondary btn-sm">
+                                                    <a href="{{ route('dashboard.submission.show', $paper->uuid) }}" class="btn btn-outline-secondary btn-sm">
                                                         View
                                                     </a>
                                                 @endif
+
 
                                             </div>
                                         </div>

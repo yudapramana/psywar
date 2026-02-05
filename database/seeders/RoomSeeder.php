@@ -3,22 +3,69 @@
 namespace Database\Seeders;
 
 use App\Models\Room;
+use App\Models\Event;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class RoomSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
+        $event = Event::first();
+
+        // Safety check
+        if (!$event) {
+            $this->command->warn('RoomSeeder dilewati: belum ada data event.');
+            return;
+        }
+
+        $eventId = $event->id;
+        $now = Carbon::now();
+
         Room::insert([
-            // Symposium
-            ['name' => 'BallRoom', 'category' => 'symposium'],
+            // =====================
+            // SYMPOSIUM
+            // =====================
+            [
+                'event_id'   => $eventId,
+                'name'       => 'BallRoom',
+                'category'   => 'symposium',
+                'capacity'   => 500,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
 
-            // Workshop
-            ['name' => 'Ruang Mulia 9', 'category' => 'workshop'],
-            ['name' => 'Ruang Mulia 10', 'category' => 'workshop'],
+            // =====================
+            // WORKSHOP
+            // =====================
+            [
+                'event_id'   => $eventId,
+                'name'       => 'Ruang Mulia 09',
+                'category'   => 'workshop',
+                'capacity'   => 50,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'event_id'   => $eventId,
+                'name'       => 'Ruang Mulia 10',
+                'category'   => 'workshop',
+                'capacity'   => 50,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
 
-            // Jeopardy
-            ['name' => 'Ruang Mulia 2', 'category' => 'jeopardy'],
+            // =====================
+            // JEOPARDY
+            // =====================
+            [
+                'event_id'   => $eventId,
+                'name'       => 'Ruang Mulia 02',
+                'category'   => 'jeopardy',
+                'capacity'   => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ]);
     }
 }

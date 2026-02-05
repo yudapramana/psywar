@@ -165,24 +165,24 @@
                             </div>
                         </div>
 
-                        {{-- FILE --}}
+                        {{-- FILE (GOOGLE DRIVE LINK) --}}
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
-                                Upload Manuscript File
+                                Google Drive File Link
                             </label>
 
-                            <input type="file" name="file" class="form-control @error('file') is-invalid @enderror" accept=".pdf,.doc,.docx" required>
+                            <input type="url" name="gdrive_link" class="form-control @error('gdrive_link') is-invalid @enderror" placeholder="https://drive.google.com/..." value="{{ old('gdrive_link') }}" required>
 
                             <div class="form-text">
-                                Accepted formats:
-                                <b>PDF, DOC, DOCX</b> • Maximum size:
-                                <b>10 MB</b>
+                                Upload your manuscript to Google Drive and paste the link here.<br>
+                                Make sure access is set to <b>Anyone with the link → Viewer</b>.
                             </div>
 
-                            @error('file')
+                            @error('gdrive_link')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
 
                         {{-- ACTION --}}
                         <div class="d-flex gap-2 mt-4">

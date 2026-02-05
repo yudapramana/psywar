@@ -40,6 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'service_accounts',
+        ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'service_accounts', // atau users
+        ],
     ],
 
     /*
@@ -63,6 +71,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'service_accounts' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ServiceAccount::class,
         ],
 
         // 'users' => [

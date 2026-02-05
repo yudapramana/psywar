@@ -27,6 +27,13 @@ class Payment extends Model
 
     public function verification()
     {
-        return $this->hasOne(PaymentVerification::class);
+        return $this->hasOne(PaymentVerification::class)
+                    ->latest('verified_at');
+    }
+
+
+    public function verifications()
+    {
+        return $this->hasMany(PaymentVerification::class, 'payment_id');
     }
 }

@@ -8,6 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
+
+        Schema::create('service_accounts', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->boolean('is_active')->default(true);
+            $table->text('encrypted_token')->nullable();
+            $table->timestamps();
+
+            $table->unique('name');
+        });
+
         /*
         |--------------------------------------------------------------------------
         | GALLERY
@@ -50,7 +61,8 @@ return new class extends Migration
         */
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->unique(); // SUPERADMIN, ADMIN, REVIEWER, USER
+            $table->string('slug')->unique(); // admin, superadmin, petugas_tahapan, ...
             $table->timestamps();
         });
 
@@ -63,12 +75,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('username')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
             $table->foreignId('role_id')->constrained()->cascadeOnUpdate();
+            $table->boolean('can_multiple_role')->default(false); // Allow multiple roles
             $table->rememberToken();
             $table->timestamps();
-
         });
 
         /*
@@ -128,17 +142,57 @@ return new class extends Migration
         */
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+
+            // =========================
+            // BASIC EVENT INFO
+            // =========================
+            $table->string('name');               // SYMCARD 2026
+            $table->string('slug')->unique();     // symcard-2026
             $table->string('theme')->nullable();
             $table->text('description')->nullable();
+
+            // =========================
+            // EVENT DATE
+            // =========================
+            $table->date('start_date');           // 06 June 2026
+            $table->date('end_date');             // 08 June 2026
             $table->date('early_bird_end_date')->nullable();
-            $table->date('start_date');
-            $table->date('end_date');
+
+            // =========================
+            // SUBMISSION TIMELINE
+            // =========================
+            $table->timestamp('submission_open_at')->nullable()
+                ->comment('When abstract/case submission opens');
+
+            $table->timestamp('submission_deadline_at')->nullable()
+                ->comment('Deadline for abstract/case submission');
+
+            $table->timestamp('notification_date')->nullable()
+                ->comment('Acceptance notification date');
+
+            $table->timestamp('submission_close_at')->nullable()
+                ->comment('Hard close submission (optional)');
+
+            // =========================
+            // SUBMISSION CONTROL
+            // =========================
+            $table->boolean('submission_is_active')->default(true)
+                ->comment('Admin override submission open/close');
+
+            // =========================
+            // LOCATION
+            // =========================
             $table->string('location')->nullable();
             $table->string('venue')->nullable();
+
+            // =========================
+            // STATUS
+            // =========================
             $table->boolean('is_active')->default(false);
+
             $table->timestamps();
         });
+
 
 
         /*
@@ -161,6 +215,7 @@ return new class extends Migration
         */
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
             $table->string('name'); // BallRoom, Ruang Mulia 9
             $table->enum('category', ['symposium', 'workshop', 'jeopardy']);
             $table->integer('capacity')->nullable();
@@ -284,6 +339,10 @@ return new class extends Migration
         */
         Schema::create('papers', function (Blueprint $table) {
             $table->id();
+            // 🔑 UUID PUBLIC IDENTIFIER
+            $table->uuid('uuid')
+                ->unique()
+                ->comment('Public UUID for paper (safe for URL / API)');
 
             $table->foreignId('participant_id')
                 ->constrained()
@@ -301,8 +360,11 @@ return new class extends Migration
                 ->comment('Abstract content, maximum 300 words');
 
 
-            // File utama (.docx / .pdf)
-            $table->string('file_path');
+            // =========================
+            // FILE (GOOGLE DRIVE)
+            // =========================
+            $table->text('gdrive_link')
+                ->comment('Google Drive file link (docx/pdf)');
 
             $table->enum('file_type', ['docx', 'pdf'])
                 ->default('docx');
@@ -334,6 +396,8 @@ return new class extends Migration
             $table->timestamp('finalized_at')->nullable();
 
             $table->timestamps();
+
+            $table->index('uuid');
         });
 
 
@@ -545,11 +609,14 @@ return new class extends Migration
             $table->foreignId('verified_by')
                 ->constrained('users');
 
+            $table->enum('action', ['approve', 'reject']);
+
             $table->timestamp('verified_at')->nullable();
             $table->text('notes')->nullable();
 
             $table->timestamps();
         });
+
 
     }
 

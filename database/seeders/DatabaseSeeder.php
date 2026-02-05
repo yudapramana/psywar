@@ -20,7 +20,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
+            SettingsTableSeeder::class,
             RoleSeeder::class,
+            RolePermissionSeeder::class,
             ParticipantCategorySeeder::class,
             PaperTypeSeeder::class,
             BoardCommitteeSeeder::class,
@@ -31,7 +33,8 @@ class DatabaseSeeder extends Seeder
             SessionSeeder::class,
             BankSeeder::class,
             PricingItemSeeder::class,
-            UserParticipantSeeder::class
+            UserSeeder::class,
+            UserParticipantSeeder::class,
         ]);
     }
 }

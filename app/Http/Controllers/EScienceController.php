@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Paper;
 use App\Models\PaperType;
+use App\Models\Event;
+use Carbon\Carbon;
 
 class EScienceController extends Controller
 {
@@ -12,7 +14,26 @@ class EScienceController extends Controller
      */
     public function submission()
     {
-        return view('pages.escience.abstract-case-submission');
+        // Ambil event aktif (SYMCARD 2026)
+        $event = Event::where('is_active', true)->firstOrFail();
+
+        $now = Carbon::now();
+
+        // Tentukan status submission
+        if (! $event->submission_is_active) {
+            $submissionStatus = 'closed';
+        } elseif ($now->lt($event->submission_open_at)) {
+            $submissionStatus = 'not_open';
+        } elseif ($now->between($event->submission_open_at, $event->submission_deadline_at)) {
+            $submissionStatus = 'open';
+        } else {
+            $submissionStatus = 'closed';
+        }
+
+        return view('pages.escience.abstract-case-submission', compact(
+            'event',
+            'submissionStatus'
+        ));
     }
 
     /**

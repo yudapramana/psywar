@@ -60,9 +60,6 @@
                         </label>
 
                         <div class="d-flex align-items-center gap-3">
-                            <span class="badge bg-secondary text-uppercase">
-                                {{ $paper->file_type }}
-                            </span>
 
                             <a href="{{ route('submissions.download', $paper) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                                 View / Download File →
