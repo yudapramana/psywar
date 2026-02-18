@@ -585,6 +585,9 @@ return new class extends Migration
 
             $table->string('proof_file')->nullable();
 
+            // ✅ TAMBAHAN BARU
+            $table->text('cloudinary_proof_url')->nullable();
+
             $table->enum('status', ['pending', 'verified', 'rejected'])
                 ->default('pending');
 

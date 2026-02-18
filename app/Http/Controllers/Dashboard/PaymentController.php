@@ -9,6 +9,7 @@ use DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class PaymentController extends Controller
 {
@@ -247,13 +248,52 @@ class PaymentController extends Controller
             $file->extension();
 
         // ======================================================
-        // 7️⃣ STORE FILE (PUBLIC OK, PRIVATE IS BETTER IF AVAILABLE)
+        // 7️⃣a STORE FILE (LOCAL - OPTIONAL)
         // ======================================================
         $path = $file->storeAs(
             'payments/proofs',
             $filename,
-            'private' // change to 'private' if you use private disk
+            'private'
         );
+
+        // ======================================================
+        // 7️⃣b UPLOAD TO CLOUDINARY
+        // ======================================================
+        try {
+
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => config('cloudinary.cloud_name'),
+                    'api_key'    => config('cloudinary.api_key'),
+                    'api_secret' => config('cloudinary.api_secret'),
+                ],
+                'url' => [
+                    'secure' => true,
+                ],
+            ]);
+
+            // ✅ Folder Dinamis: payments/2026/02
+            $dynamicFolder = config('cloudinary.base_folder') . '/' . now()->format('Y/m');
+
+            $uploadResult = $cloudinary->uploadApi()->upload(
+                $file->getRealPath(),
+                [
+                    'folder'    => $dynamicFolder,
+                    'public_id' => pathinfo($filename, PATHINFO_FILENAME),
+                    'overwrite' => true,
+                ]
+            );
+
+            $cloudinaryUrl = $uploadResult['secure_url'];
+
+        } catch (\Exception $e) {
+
+            return back()->withErrors([
+                'proof_file' => 'Cloud upload failed. Please try again.',
+            ]);
+        }
+
+
 
         // ======================================================
         // 8️⃣ UPSERT PAYMENT RECORD (SAFE & IDEMPOTENT)
@@ -263,15 +303,17 @@ class PaymentController extends Controller
                 'registration_id' => $registration->id,
             ],
             [
-                'payment_method' => 'bank_transfer',
-                'amount'         => $registration->total_amount + ($registration->unique_code ?? 0),
-                'proof_file'     => $path,
-                'status'         => 'pending',
-                'paid_at'        => now(),
-                'updated_at'     => now(),
-                'created_at'     => now(),
+                'payment_method'        => 'bank_transfer',
+                'amount'                => $registration->total_amount + ($registration->unique_code ?? 0),
+                'proof_file'            => $path,
+                'cloudinary_proof_url'  => $cloudinaryUrl, // ✅ SIMPAN URL CLOUDINARY
+                'status'                => 'pending',
+                'paid_at'               => now(),
+                'updated_at'            => now(),
+                'created_at'            => now(),
             ]
         );
+
 
         // ======================================================
         // 9️⃣ UPDATE REGISTRATION STEP (IDEMPOTENT)
