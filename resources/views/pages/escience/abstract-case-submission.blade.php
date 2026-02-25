@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('body-class', 'inner-page')
+
 @section('title', 'Abstracts & Cases Submission | SYMCARD 2026')
 
 @section('content')
@@ -9,9 +11,9 @@
         background-image:
         linear-gradient(
             135deg,
-            rgba(11, 28, 61, 0.47) 0%,
-            rgba(18, 58, 130, 0.47) 45%,
-            rgba(128, 20, 40, 0.47) 100%
+            rgba(70, 40, 8, 0.78) 0%,       /* deep brown */
+            rgba(150, 100, 25, 0.72) 45%,   /* rich gold */
+            rgba(90, 55, 12, 0.82) 100%     /* dark bronze */
         ),
         url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent4.jpg') }}');
         background-size: cover;
@@ -85,7 +87,7 @@
                             @endif
 
                             {{-- GUIDELINE --}}
-                            <a href="{{ asset('downloads/abstract-submission-guidelines.pdf') }}" class="btn btn-outline-primary w-100">
+                            <a href="{{ asset('downloads/abstract-submission-guidelines.pdf') }}" target="_blank" class="btn btn-outline-primary w-100">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Abstract Submission Guidelines
                             </a>
@@ -107,7 +109,7 @@
 
                     <div class="ratio ratio-16x9 mb-5">
                         {{-- Ganti URL sesuai kebutuhan --}}
-                        <iframe src="https://drive.google.com/file/d/0B4F2UNmFsOSxVG5nRm5CUDBzOWM/preview" allow="autoplay" loading="lazy">
+                        <iframe src="https://drive.google.com/file/d/1Mle7vrBGt2Dlk4bKOOie8hTScu6Fh1ve/preview" allow="autoplay" loading="lazy">
                         </iframe>
                     </div>
 

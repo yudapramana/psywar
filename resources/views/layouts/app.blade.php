@@ -31,7 +31,9 @@
     <link href="{{ asset('projects/assets/css/symcard.css') }}" rel="stylesheet">
 </head>
 
-<body class="index-page">
+{{-- <body class="index-page"> --}}
+
+<body class="@yield('body-class')">
 
     @include('layouts.header')
 

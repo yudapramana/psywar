@@ -54,7 +54,7 @@
                         <a href="{{ route('program.full-program') }}" class="btn btn-primary">
                             View Scientific Program
                         </a>
-                        <a href="#registration" class="btn btn-outline">
+                        <a href="{{ route('registration') }}" class="btn btn-outline">
                             Register Now
                         </a>
                     </div>

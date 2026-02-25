@@ -1,16 +1,6 @@
 <!-- Hero Section -->
 <section id="hero" class="hero section dark-background symcard-hero-medical p-0">
 
-    <!-- Background Slider -->
-    <div class="hero-slider">
-        <div class="slide active" style="background-image: url('{{ asset('projects/assets/img/hero/slide1.jpg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide2.png') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide3.jpg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide5.jpeg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide4.jpeg') }}');"></div>
-    </div>
-
-    <!-- Golden Overlay -->
     <div class="background-overlay"></div>
 
     <div class="hero-content">
@@ -91,10 +81,6 @@
 
                             <a href="{{ route('program.full-program') }}" class="btn btn-secondary btn-cta">
                                 Scientific Program
-                            </a>
-
-                            <a href="{{ route('escience.abstracts-cases-submission') }}" class="btn btn-secondary btn-cta">
-                                Abstract Submission
                             </a>
 
                         </div>

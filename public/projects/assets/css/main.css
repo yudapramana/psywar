@@ -215,7 +215,7 @@ h6 {
 
 /* ================= SCROLLED HEADER - SYMCARD GRADIENT (FIXED) ================= */
 
-.scrolled .header {
+/* .scrolled .header {
   background: linear-gradient(
     90deg,
     #1b2f6b 0%,
@@ -225,10 +225,34 @@ h6 {
   ) !important;
 
   box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.18);
+} */
+
+.inner-page .header {
+  background: linear-gradient(
+    90deg,
+    #4a2c0a 0%,     /* dark brown */
+    #8c5a17 35%,    /* deep gold */
+    #c9952e 70%,    /* warm gold */
+    #5a330b 100%    /* bronze edge */
+  ) !important;
+
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+.landing-page.scrolled .header {
+  background: linear-gradient(
+    90deg,
+    #4a2c0a 0%,     /* dark brown */
+    #8c5a17 35%,    /* deep gold */
+    #c9952e 70%,    /* warm gold */
+    #5a330b 100%    /* bronze edge */
+  ) !important;
+
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.25);
 }
 
 
-.scrolled .header {
+.landing-page.scrolled .header {
   background-size: 200% 200%;
   animation: symcardGradient 6s ease infinite;
 }

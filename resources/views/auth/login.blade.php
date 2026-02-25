@@ -39,8 +39,9 @@
 
         <div class="auth-header mb-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <img src="{{ asset('projects/assets/img/symcardlogolong.png') }}" alt="Logo" height="41">
-
+                <a href="{{ route('landing') }}">
+                    <img src="{{ asset('projects/assets/img/symcardlogolong.png') }}" alt="Logo" height="41">
+                </a>
                 <a href="{{ route('register') }}" class="back-link">
                     ← Go to Register
                 </a>

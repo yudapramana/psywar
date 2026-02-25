@@ -34,6 +34,8 @@ class SubmissionController extends Controller
         // =========================
         // SUBMISSION STATUS (SAMA DENGAN HALAMAN PUBLIK)
         // =========================
+
+        // return $now . ';;;;' . $event->submission_open_at;
         if (! $event->submission_open_at || ! $event->submission_deadline_at) {
             $submissionStatus = 'closed';
         } elseif ($now->lt($event->submission_open_at)) {
@@ -45,6 +47,7 @@ class SubmissionController extends Controller
             $submissionStatus = 'open';
         }
 
+        // return $submissionStatus;
         // =========================
         // LOCK JIKA BELUM / SUDAH TUTUP
         // =========================
@@ -64,7 +67,7 @@ class SubmissionController extends Controller
             ->first();
 
         if (! $registration) {
-            return view('dashboard.submission.locked', compact(
+            return view('dashboard.submission.package-required', compact(
                 'event',
                 'submissionStatus'
             ));

@@ -7,3 +7,89 @@
   --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
   --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
+
+.symcard-hero-medical {
+  position: relative;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(11, 28, 61, 0.92) 0%,
+      rgba(18, 58, 130, 0.88) 45%,
+      rgba(128, 20, 40, 0.88) 100%
+    ),
+    url("../img/symcard-hero.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Override Evently overlay (biar gak dobel gelap) */
+.symcard-hero-medical .background-overlay {
+  background: transparent;
+}
+
+/* Title tweak (medical feel) */
+.symcard-hero-medical .hero-title {
+  font-weight: 800;
+}
+
+/* Countdown emphasis */
+.symcard-hero-medical .countdown-label {
+  color: #ffecec;
+}
+
+.symcard-hero-medical .countdown h3 {
+  color: #ffffff;
+}
+
+/* CTA medical red */
+.symcard-hero-medical .btn-primary {
+  background-color: #c62828;
+  border-color: #c62828;
+}
+
+.symcard-hero-medical .btn-primary:hover {
+  background-color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+
+
+/* .scrolled .header {
+  background: linear-gradient(
+    90deg,
+    #1b2f6b 0%,
+    #0f3d4c 35%,
+    #4b1f3a 65%,
+    #c4161c 100%
+  ) !important;
+
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.18);
+} */
+
+
+.scrolled .header {
+  background: linear-gradient(
+    90deg,
+    #4a2c0a 0%,     /* dark brown */
+    #8c5a17 35%,    /* deep gold */
+    #c9952e 70%,    /* warm gold */
+    #5a330b 100%    /* bronze edge */
+  ) !important;
+
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.25);
+}
+
+
+.scrolled .header {
+  background-size: 200% 200%;
+  animation: symcardGradient 6s ease infinite;
+}
+
+@keyframes symcardGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

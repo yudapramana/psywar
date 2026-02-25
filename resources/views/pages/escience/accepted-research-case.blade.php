@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('body-class', 'inner-page')
+
 @section('title', 'Accepted Research & Case | SYMCARD 2026')
 
 @section('content')
@@ -55,17 +57,17 @@
 
     {{-- ================= PAGE TITLE ================= --}}
     <div class="page-title dark-background" style="
-    background-image:
-    linear-gradient(
-        135deg,
-        rgba(11, 28, 61, 0.47) 0%,
-        rgba(18, 58, 130, 0.47) 45%,
-        rgba(128, 20, 40, 0.47) 100%
-    ),
-    url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent4.jpg') }}');
-    background-size: cover;
-    background-position: center;
-">
+        background-image:
+        linear-gradient(
+            135deg,
+            rgba(70, 40, 8, 0.78) 0%,       /* deep brown */
+            rgba(150, 100, 25, 0.72) 45%,   /* rich gold */
+            rgba(90, 55, 12, 0.82) 100%     /* dark bronze */
+        ),
+        url('{{ asset('projects/assets/img/symcardheadercontent/symcardheadercontent4.jpg') }}');
+        background-size: cover;
+        background-position: center;
+    ">
         <div class="container position-relative">
             <h1>Accepted Research & Case</h1>
             <p>E-Science Station • SYMCARD 2026</p>

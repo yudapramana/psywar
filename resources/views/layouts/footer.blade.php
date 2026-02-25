@@ -50,11 +50,30 @@
             <div class="col-lg-4 col-md-6">
                 <h5 class="footer-title">Contact Information</h5>
 
-                <p class="footer-text">
-                    Department of Cardiology and Vascular Medicine<br>
-                    Faculty of Medicine, Universitas Andalas<br>
-                    West Sumatera, Indonesia
-                </p>
+                <ul class="footer-contact-list list-unstyled">
+
+                    <li class="mb-2">
+                        <i class="bi bi-whatsapp text-success me-2"></i>
+                        <a href="https://wa.me/6281364900253" target="_blank" style="color: white">
+                            Suci 081364900253
+                        </a>
+                    </li>
+
+                    <li class="mb-2">
+                        <i class="bi bi-whatsapp text-success me-2"></i>
+                        <a href="https://wa.me/6281266701313" target="_blank" style="color: white">
+                            Lona 081266701313
+                        </a>
+                    </li>
+
+                    <li class="mt-3">
+                        <i class="bi bi-instagram me-2" style="color:#C13584;"></i>
+                        <a href="https://instagram.com/symcardpadang2026" target="_blank" style="color: white">
+                            @symcardpadang2026
+                        </a>
+                    </li>
+
+                </ul>
             </div>
 
         </div>

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('body-class', 'inner-page')
+
 @section('title', 'Venue | SYMCARD 2026')
 
 @section('content')
