@@ -110,7 +110,9 @@
             </button>
 
             <div class="brand">
-                <img src="{{ asset('projects/assets/img/symcardlong.png') }}">
+                <a href="{{ route('landing') }}">
+                    <img src="{{ asset('projects/assets/img/symcardlong.png') }}">
+                </a>
             </div>
         </div>
 

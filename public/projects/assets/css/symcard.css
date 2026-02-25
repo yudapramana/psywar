@@ -18,6 +18,24 @@
    SYMCARD HERO – EVENTLY BASE
 ===================================== */
 
+/* .symcard-hero-medical {
+  position: relative;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(248, 236, 204, 0.95) 0%,     
+      rgba(230, 185, 75, 0.90) 40%,    
+      rgba(210, 145, 40, 0.88) 75%,     
+      rgba(140, 90, 25, 0.92) 100%     
+    ),
+    url("../img/symcard-hero.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+} */
+
 .symcard-hero-medical {
   position: relative;
 

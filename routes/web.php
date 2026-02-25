@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\MyScheduleController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\SubmissionController;
 use App\Http\Controllers\EScienceController;
+use App\Http\Controllers\RegistrationPageController;
 use App\Models\ServiceAccount;
 
 /*
@@ -128,7 +129,8 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
 
 
 
-
+Route::get('/registration', [RegistrationPageController::class, 'index'])
+    ->name('registration');
 
 
 Route::get('/captcha/refresh', function () {

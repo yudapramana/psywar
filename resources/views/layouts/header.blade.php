@@ -181,7 +181,7 @@
                     </li>
                 @else
                     <li>
-                        <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">
+                        <a href="{{ route('registration') }}" class="{{ request()->routeIs('registration') ? 'active' : '' }}">
                             Register Now
                         </a>
                     </li>

@@ -250,11 +250,12 @@ class PaymentController extends Controller
         // ======================================================
         // 7️⃣a STORE FILE (LOCAL - OPTIONAL)
         // ======================================================
-        $path = $file->storeAs(
-            'payments/proofs',
-            $filename,
-            'private'
-        );
+        $path = null;
+        // $path = $file->storeAs(
+        //     'payments/proofs',
+        //     $filename,
+        //     'private'
+        // );
 
         // ======================================================
         // 7️⃣b UPLOAD TO CLOUDINARY
