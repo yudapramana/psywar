@@ -1,13 +1,15 @@
 @extends('layouts.app')
 
+@section('body-class', 'inner-page')
+
 @section('title', 'Registration | SYMCARD 2026')
 
 @section('content')
 
     <style>
         /* ===============================
-                                                               FINAL PRODUCTION STYLE
-                                                            ================================= */
+                                                                       FINAL PRODUCTION STYLE
+                                                                    ================================= */
 
         .package-card {
             border-radius: 18px;
@@ -37,8 +39,8 @@
         }
 
         /* ===============================
-                           FIX PACKAGE TITLE & BADGE
-                        ================================= */
+                                   FIX PACKAGE TITLE & BADGE
+                                ================================= */
 
         .package-title {
             width: 240px;
@@ -137,8 +139,8 @@
         }
 
         /* ===============================
-                                                               MOBILE
-                                                            ================================= */
+                                                                       MOBILE
+                                                                    ================================= */
 
         @media (max-width: 768px) {
 
