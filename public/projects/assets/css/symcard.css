@@ -54,17 +54,49 @@
 
 
 /* GOLD OVERLAY */
-.symcard-hero-medical .background-overlay {
+/* .symcard-hero-medical .background-overlay {
   position: absolute;
   inset: 0;
   z-index: 2;
   background: linear-gradient(
     140deg,
-    rgba(70, 40, 8, 0.95) 0%,        /* deep brown base */
-    rgba(140, 95, 25, 0.90) 40%,     /* rich gold */
-    rgba(200, 145, 40, 0.80) 70%,    /* warm highlight */
-    rgba(55, 30, 5, 0.95) 100%       /* dark fade */
+    rgba(70, 40, 8, 0.95) 0%,        
+    rgba(140, 95, 25, 0.90) 40%,     
+    rgba(200, 145, 40, 0.80) 70%,    
+    rgba(55, 30, 5, 0.95) 100%       
   );
+} */
+
+/* 
+.symcard-hero-medical .background-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+  135deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.35) 50%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+} */
+
+
+.symcard-hero-medical .background-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.40),
+      rgba(0, 0, 0, 0.60)
+    ),
+    linear-gradient(
+      140deg,
+      rgba(200, 145, 40, 0.33),
+      rgba(140, 95, 25, 0.33)
+    );
 }
 
 /* Content above slider */
@@ -1101,4 +1133,66 @@ body {
 .flyer-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+}
+
+
+
+/* ===============================
+   HERO CTA – SYMCARD GOLD THEME
+================================ */
+
+.btn-cta {
+  padding: 12px 28px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+}
+
+/* 1️⃣ Primary – Gold Solid */
+.btn-cta-primary {
+  background: linear-gradient(
+    135deg,
+    #c9952e,
+    #e6b75a
+  );
+  border: none;
+  color: #2b1a05;
+  box-shadow: 0 8px 25px rgba(201, 149, 46, 0.4);
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(201, 149, 46, 0.6);
+  background: linear-gradient(
+    135deg,
+    #b88422,
+    #f0c76b
+  );
+}
+
+/* 2️⃣ Secondary – Bronze Outline */
+.btn-cta-secondary {
+  background: transparent;
+  border: 2px solid #c9952e;
+  color: #ffffff;
+}
+
+.btn-cta-secondary:hover {
+  background: rgba(201, 149, 46, 0.15);
+  border-color: #e6b75a;
+  color: #ffffff;
+}
+
+/* 3️⃣ Tertiary – Glass Gold */
+.btn-cta-tertiary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+}
+
+.btn-cta-tertiary:hover {
+  border-color: #e6b75a;
+  color: #e6b75a;
 }

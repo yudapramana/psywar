@@ -3,11 +3,17 @@
 
     <!-- Background Slider -->
     <div class="hero-slider">
-        <div class="slide active" style="background-image: url('{{ asset('projects/assets/img/hero/slide1.jpg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide2.png') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide3.jpg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide5.jpeg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/slide4.jpeg') }}');"></div>
+        <div class="slide active" style="background-image: url('{{ asset('projects/assets/img/hero/symposium.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/masjidrayasumbar.png') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/jamgadang.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/rumahgaadang.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/tabuik.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/pulaupasumpahan.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/71/Jakarta_TMII_-_West_Sumatra_%282025%29_-_img_14.jpg')"></div>
+        <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Padang_City_as_seen_from_the_peak_of_Gunung_Padang%2C_2017-02-14.jpg')"></div>
+        <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/f1/Paragliding_Agam.jpg')"></div>
+        <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/28/Dispar_Lembah_Harau.jpg')"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/kepulauanmentawai.jpg') }}');"></div>
     </div>
 
     <!-- Golden Overlay -->
@@ -75,15 +81,15 @@
                     <!-- CTA -->
                     <div class="cta-section">
 
-                        <div class="cta-buttons">
+                        {{-- <div class="cta-buttons">
 
                             @auth
-                                {{-- USER SUDAH LOGIN --}}
+                                
                                 <a href="{{ route('home') }}" class="btn btn-primary btn-cta">
                                     Go to Dashboard
                                 </a>
                             @else
-                                {{-- USER BELUM LOGIN --}}
+                                
                                 <a href="{{ route('registration') }}" class="btn btn-primary btn-cta">
                                     Register Now
                                 </a>
@@ -94,6 +100,28 @@
                             </a>
 
                             <a href="{{ route('escience.abstracts-cases-submission') }}" class="btn btn-secondary btn-cta">
+                                Abstract Submission
+                            </a>
+
+                        </div> --}}
+
+                        <div class="cta-buttons">
+
+                            @auth
+                                <a href="{{ route('home') }}" class="btn btn-cta btn-cta-primary">
+                                    Go to Dashboard
+                                </a>
+                            @else
+                                <a href="{{ route('registration') }}" class="btn btn-cta btn-cta-primary">
+                                    Register Now
+                                </a>
+                            @endauth
+
+                            <a href="{{ route('program.full-program') }}" class="btn btn-cta btn-cta-secondary">
+                                Scientific Program
+                            </a>
+
+                            <a href="{{ route('escience.abstracts-cases-submission') }}" class="btn btn-cta btn-cta-tertiary">
                                 Abstract Submission
                             </a>
 

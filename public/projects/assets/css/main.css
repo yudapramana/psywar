@@ -828,7 +828,7 @@ section,
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background-image: url("../img/events/showcase-1.webp");
+  /* background-image: url("../img/events/showcase-1.webp"); */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
