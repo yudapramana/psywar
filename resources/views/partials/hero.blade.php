@@ -8,12 +8,12 @@
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/jamgadang.jpg') }}');"></div>
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/rumahgaadang.jpg') }}');"></div>
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/tabuik.jpg') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/pulaupasumpahan.jpg') }}');"></div>
+        {{-- <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/pulaupasumpahan.jpg') }}');"></div>
         <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/71/Jakarta_TMII_-_West_Sumatra_%282025%29_-_img_14.jpg')"></div>
         <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Padang_City_as_seen_from_the_peak_of_Gunung_Padang%2C_2017-02-14.jpg')"></div>
         <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/f/f1/Paragliding_Agam.jpg')"></div>
         <div class="slide" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/28/Dispar_Lembah_Harau.jpg')"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/kepulauanmentawai.jpg') }}');"></div>
+        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/kepulauanmentawai.jpg') }}');"></div> --}}
     </div>
 
     <!-- Golden Overlay -->
