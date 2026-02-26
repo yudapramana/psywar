@@ -35,13 +35,13 @@
 
                 <div class="col-lg-6">
                     <div class="flyer-card">
-                        <img src="{{ asset('projects/assets/img/flyers/flyer1.jpeg') }}" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg">
+                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772070229/PandanViewMandeh/lfbqgmugsfxwxw0rduht.jpg" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg">
                     </div>
                 </div>
 
                 <div class="col-lg-6">
                     <div class="flyer-card">
-                        <img src="{{ asset('projects/assets/img/flyers/flyer2.jpeg') }}" alt="Symcard Flyer 2" class="img-fluid rounded-4 shadow-lg">
+                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772067760/PandanViewMandeh/dn9hdzfhzpqz1mklcjez.jpg" alt="Symcard Flyer 2" class="img-fluid rounded-4 shadow-lg">
                     </div>
                 </div>
 
@@ -81,13 +81,26 @@
             const slides = document.querySelectorAll(".hero-slider .slide");
             let current = 0;
 
+            function loadBackground(slide) {
+                if (!slide.style.backgroundImage) {
+                    const bg = slide.getAttribute("data-bg");
+                    if (bg) {
+                        slide.style.backgroundImage = `url('${bg}')`;
+                    }
+                }
+            }
+
             function nextSlide() {
                 slides[current].classList.remove("active");
+
                 current = (current + 1) % slides.length;
+
+                loadBackground(slides[current]);
+
                 slides[current].classList.add("active");
             }
 
-            setInterval(nextSlide, 3000); // ganti setiap 5 detik
+            setInterval(nextSlide, 5000);
         });
     </script>
 @endsection
