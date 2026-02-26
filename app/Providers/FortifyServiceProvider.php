@@ -74,9 +74,21 @@ class FortifyServiceProvider extends ServiceProvider
             // ======================
             // CEK ROLE (HARUS PARTICIPANT)
             // ======================
-            if (! $user->role || $user->role->slug !== 'participant') {
+            if (! $user) {
                 throw ValidationException::withMessages([
-                    'email' => 'Akun ini bukan akun peserta.',
+                    'email' => 'Email is not registered.',
+                ]);
+            }
+
+            if (! $user->role) {
+                throw ValidationException::withMessages([
+                    'email' => 'Account role not found.',
+                ]);
+            }
+
+            if ($user->role->slug !== 'participant') {
+                throw ValidationException::withMessages([
+                    'email' => 'This account is not a participant account.',
                 ]);
             }
 
