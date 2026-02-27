@@ -12,15 +12,6 @@
     {{-- ================= EVENT FLYER ================= --}}
     <section class="symcard-flyer-section py-5 section about section">
         <div class="container">
-            {{-- 
-            <div class="row justify-content-center text-center mb-4">
-                <div class="col-lg-8">
-                    <h2 class="section-title mb-1 pb-1">Event Information</h2>
-                    <p class="section-subtitle">
-                        Complete overview of SYMCARD 2026 Symposium & Workshop
-                    </p>
-                </div>
-            </div> --}}
 
             <div class="row justify-content-center mb-3">
                 <div class="col-lg-8 text-center" data-aos="fade-up" data-aos-delay="200">
@@ -35,13 +26,13 @@
 
                 <div class="col-lg-6">
                     <div class="flyer-card">
-                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772167706/PandanViewMandeh/c79bdgx80ycdansy2zjh.png" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg">
+                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772167706/PandanViewMandeh/c79bdgx80ycdansy2zjh.png" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg" loading="lazy" decoding="async" width="800" height="1000">
                     </div>
                 </div>
 
                 <div class="col-lg-6">
                     <div class="flyer-card">
-                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772067760/PandanViewMandeh/dn9hdzfhzpqz1mklcjez.jpg" alt="Symcard Flyer 2" class="img-fluid rounded-4 shadow-lg">
+                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772067760/PandanViewMandeh/dn9hdzfhzpqz1mklcjez.jpg" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg" loading="lazy" decoding="async" width="800" height="1000">
                     </div>
                 </div>
 
@@ -75,32 +66,32 @@
     @include('partials.gallery')
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+    @push('scripts')
+        <script defer>
+            document.addEventListener("DOMContentLoaded", function() {
 
-            const slides = document.querySelectorAll(".hero-slider .slide");
-            let current = 0;
+                const slides = document.querySelectorAll(".hero-slider .slide");
+                let current = 0;
 
-            function loadBackground(slide) {
-                if (!slide.style.backgroundImage) {
-                    const bg = slide.getAttribute("data-bg");
-                    if (bg) {
-                        slide.style.backgroundImage = `url('${bg}')`;
+                function loadBackground(slide) {
+                    if (!slide.dataset.loaded) {
+                        const bg = slide.dataset.bg;
+                        if (bg) {
+                            slide.style.backgroundImage = `url('${bg}')`;
+                            slide.dataset.loaded = true;
+                        }
                     }
                 }
-            }
 
-            function nextSlide() {
-                slides[current].classList.remove("active");
+                function nextSlide() {
+                    slides[current].classList.remove("active");
+                    current = (current + 1) % slides.length;
+                    loadBackground(slides[current]);
+                    slides[current].classList.add("active");
+                }
 
-                current = (current + 1) % slides.length;
-
-                loadBackground(slides[current]);
-
-                slides[current].classList.add("active");
-            }
-
-            setInterval(nextSlide, 5000);
-        });
-    </script>
+                setInterval(nextSlide, 6000);
+            });
+        </script>
+    @endpush
 @endsection

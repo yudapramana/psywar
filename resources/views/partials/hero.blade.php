@@ -7,7 +7,6 @@
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/masjidrayasumbar.webp') }}');"></div>
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/jamgadang.webp') }}');"></div>
         <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/rumahgaadang.webp') }}');"></div>
-        <div class="slide" style="background-image: url('{{ asset('projects/assets/img/hero/pulaupasumpahan.webp') }}');"></div>
     </div>
 
     <!-- Golden Overlay -->

@@ -34,7 +34,7 @@
 
                     <div class="services-image-container" data-aos="fade-up" data-aos-delay="200">
                         <div class="services-image">
-                            <img src="{{ asset('projects/assets/img/symcard-hero.jpg') }}" alt="Scientific Program" class="img-fluid">
+                            <img src="{{ asset('projects/assets/img/symcard-hero.jpg') }}" alt="Scientific Program" class="img-fluid" loading="lazy" decoding="async">
                         </div>
                     </div>
                 </div>

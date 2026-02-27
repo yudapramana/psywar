@@ -65,7 +65,7 @@
             <div class="col-lg-6">
                 <div class="visual-section">
                     <div class="image-wrapper">
-                        <img src="{{ asset('projects/assets/img/symcard-hero.jpg') }}" alt="SYMCARD Scientific Session" class="img-fluid">
+                        <img src="{{ asset('projects/assets/img/symcard-hero.jpg') }}" alt="SYMCARD Scientific Session" class="img-fluid" loading="lazy" decoding="async">
 
                         <div class="gradient-overlay"></div>
 
