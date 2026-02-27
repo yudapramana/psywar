@@ -154,7 +154,7 @@
 
 
                         {{-- FILE INFO --}}
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                             <label class="form-label fw-semibold">
                                 Uploaded Manuscript
                             </label>
@@ -164,6 +164,30 @@
                                     View / Download File →
                                 </a>
                             </div>
+                        </div> --}}
+
+                        {{-- GOOGLE DRIVE FILE LINK --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold d-flex align-items-center gap-2">
+                                Google Drive File Link
+
+                                <a href="{{ route('submissions.download', $paper) }}" target="_blank" class="badge bg-primary text-decoration-none">
+                                    View Recent File
+                                </a>
+                            </label>
+
+                            <input type="url" name="gdrive_link" class="form-control @error('gdrive_link') is-invalid @enderror" value="{{ old('gdrive_link', $paper->gdrive_link) }}" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing" {{ $paper->status !== 'draft' ? 'readonly' : '' }} required>
+
+                            <div class="form-text">
+                                Upload your manuscript to Google Drive and set access to
+                                <b>Anyone with the link (Viewer)</b>.
+                            </div>
+
+                            @error('gdrive_link')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
                         {{-- ACTION --}}

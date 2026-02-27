@@ -372,6 +372,36 @@ class SubmissionController extends Controller
                 }
             ],
 
+            // GOOGLE DRIVE LINK VALIDATION
+            'gdrive_link' => [
+                'required',
+                'url',
+                function ($attr, $value, $fail) {
+
+                    $allowedHosts = [
+                        'drive.google.com',
+                        'docs.google.com',
+                    ];
+
+                    $host = parse_url($value, PHP_URL_HOST);
+
+                    if (!$host || !in_array($host, $allowedHosts)) {
+                        $fail('Only Google Drive links are allowed.');
+                        return;
+                    }
+
+                    if (!str_contains($value, 'usp=sharing')) {
+                        $fail('Please set access to "Anyone with the link (Viewer)".');
+                        return;
+                    }
+
+                    if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
+                        $fail('Invalid Google Drive file link format.');
+                        return;
+                    }
+                }
+            ],
+
             'authors'                    => 'required|array|min:1',
             'authors.*.name'             => 'required|string|max:255',
             'authors.*.affiliation'      => 'nullable|string|max:255',
@@ -386,6 +416,7 @@ class SubmissionController extends Controller
             'paper_type_id' => $validated['paper_type_id'],
             'title'         => $validated['title'],
             'abstract'      => $validated['abstract'],
+            'gdrive_link'   => $validated['gdrive_link'],
         ]);
 
         // =========================
