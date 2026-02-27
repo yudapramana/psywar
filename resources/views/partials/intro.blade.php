@@ -79,11 +79,11 @@
             <div class="col-lg-6 order-lg-2" data-aos="fade-left" data-aos-delay="300">
                 <div class="about-image-grid">
 
-                    <img src="{{ asset('projects/assets/img/symcard/symcard-1.jpg') }}" class="img-grid-main" loading="lazy" decoding="async" alt="Scientific symposium">
+                    <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/q_5,f_avif/v1772176995/PandanViewMandeh/dzl8pdij4srpigtzzu8v.jpg" class="img-grid-main" loading="lazy" decoding="async" alt="Scientific symposium">
 
-                    <img src="{{ asset('projects/assets/img/symcard/symcard-3.jpg') }}" class="img-grid-secondary" loading="lazy" decoding="async" alt="Workshop session">
+                    <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/q_5,f_avif/v1772177061/PandanViewMandeh/vuegweg9ksd3eihrh9m2.jpg" class="img-grid-secondary" loading="lazy" decoding="async" alt="Workshop session">
 
-                    <img src="{{ asset('projects/assets/img/symcard/symcard-2.jpg') }}" class="img-grid-tertiary" loading="lazy" decoding="async" alt="Cardiology discussion">
+                    <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/q_5,f_avif/v1772177094/PandanViewMandeh/zhql9ygjvsqodeqswe1k.jpg" class="img-grid-tertiary" loading="lazy" decoding="async" alt="Cardiology discussion">
 
                     <div class="experience-badge" data-aos="zoom-in" data-aos-delay="500">
                         <span class="years">11<sup>th</sup></span>
