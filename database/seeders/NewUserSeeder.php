@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             [
                 'name'              => 'Super Admin',
                 'username'          => 'superadmin',
-                'password'          => Hash::make('Dz4kk@symcard'),
+                'password'          => Hash::make('password'),
                 'role_id'           => $roles['superadmin']->id,
                 'can_multiple_role' => true,
             ]
@@ -48,20 +48,20 @@ class UserSeeder extends Seeder
         // ============================
         // MASTER ADMIN
         // ============================
-        // $masterAdmin = User::updateOrCreate(
-        //     ['email' => 'admin@padangsymcard.com'],
-        //     [
-        //         'name'              => 'Master Admin',
-        //         'username'          => 'admin',
-        //         'password'          => Hash::make('password'),
-        //         'role_id'           => $roles['master_admin']->id,
-        //         'can_multiple_role' => true,
-        //     ]
-        // );
+        $masterAdmin = User::updateOrCreate(
+            ['email' => 'admin@padangsymcard.com'],
+            [
+                'name'              => 'Master Admin',
+                'username'          => 'admin',
+                'password'          => Hash::make('password'),
+                'role_id'           => $roles['master_admin']->id,
+                'can_multiple_role' => true,
+            ]
+        );
 
-        // $masterAdmin->roles()->syncWithoutDetaching([
-        //     $roles['master_admin']->id,
-        // ]);
+        $masterAdmin->roles()->syncWithoutDetaching([
+            $roles['master_admin']->id,
+        ]);
         
         // MARZAIN
         $masterAdminMarzain = User::updateOrCreate(
@@ -82,20 +82,20 @@ class UserSeeder extends Seeder
         // ============================
         // FINANCE ADMIN
         // ============================
-        // $financeAdmin = User::updateOrCreate(
-        //     ['email' => 'finance@padangsymcard.com'],
-        //     [
-        //         'name'              => 'Finance Admin',
-        //         'username'          => 'finance_admin',
-        //         'password'          => Hash::make('password'),
-        //         'role_id'           => $roles['finance_admin']->id,
-        //         'can_multiple_role' => false,
-        //     ]
-        // );
+        $financeAdmin = User::updateOrCreate(
+            ['email' => 'finance@padangsymcard.com'],
+            [
+                'name'              => 'Finance Admin',
+                'username'          => 'finance_admin',
+                'password'          => Hash::make('password'),
+                'role_id'           => $roles['finance_admin']->id,
+                'can_multiple_role' => false,
+            ]
+        );
 
-        // $financeAdmin->roles()->syncWithoutDetaching([
-        //     $roles['finance_admin']->id,
-        // ]);
+        $financeAdmin->roles()->syncWithoutDetaching([
+            $roles['finance_admin']->id,
+        ]);
 
         // FIGA
         $financeAdminFiga = User::updateOrCreate(
@@ -132,44 +132,44 @@ class UserSeeder extends Seeder
         // ============================
         // CONTENT ADMIN
         // ============================
-        // $contentAdmin = User::updateOrCreate(
-        //     ['email' => 'content@padangsymcard.com'],
-        //     [
-        //         'name'              => 'Content Admin',
-        //         'username'          => 'content_admin',
-        //         'password'          => Hash::make('password'),
-        //         'role_id'           => $roles['content_admin']->id,
-        //         'can_multiple_role' => false,
-        //     ]
-        // );
+        $contentAdmin = User::updateOrCreate(
+            ['email' => 'content@padangsymcard.com'],
+            [
+                'name'              => 'Content Admin',
+                'username'          => 'content_admin',
+                'password'          => Hash::make('password'),
+                'role_id'           => $roles['content_admin']->id,
+                'can_multiple_role' => false,
+            ]
+        );
 
-        // $contentAdmin->roles()->syncWithoutDetaching([
-        //     $roles['content_admin']->id,
-        // ]);
+        $contentAdmin->roles()->syncWithoutDetaching([
+            $roles['content_admin']->id,
+        ]);
 
         // ============================
         // SCIENCE ADMIN (PAPER REVIEW)
         // ============================
-        // $scienceAdmin = User::updateOrCreate(
-        //     ['email' => 'science@padangsymcard.com'],
-        //     [
-        //         'name'              => 'Science Admin',
-        //         'username'          => 'science_admin',
-        //         'password'          => Hash::make('password'),
-        //         'role_id'           => $roles['science_admin']->id,
-        //         'can_multiple_role' => false,
-        //     ]
-        // );
+        $scienceAdmin = User::updateOrCreate(
+            ['email' => 'science@padangsymcard.com'],
+            [
+                'name'              => 'Science Admin',
+                'username'          => 'science_admin',
+                'password'          => Hash::make('password'),
+                'role_id'           => $roles['science_admin']->id,
+                'can_multiple_role' => false,
+            ]
+        );
 
-        // $scienceAdmin->roles()->syncWithoutDetaching([
-        //     $roles['science_admin']->id,
-        // ]);
+        $scienceAdmin->roles()->syncWithoutDetaching([
+            $roles['science_admin']->id,
+        ]);
 
         // FIKRI
         $scienceAdminFikri = User::updateOrCreate(
             ['email' => 'fikrisk@gmail.com'],
             [
-                'name'              => 'Muhammad Fikri Satria Kamal',
+                'name'              => 'Muhammad fikri satria kamal',
                 'username'          => 'fikrisk',
                 'password'          => Hash::make('fikriadmin'),
                 'role_id'           => $roles['science_admin']->id,
@@ -184,19 +184,19 @@ class UserSeeder extends Seeder
         // ============================
         // COMMITTEE
         // ============================
-        // $committee = User::updateOrCreate(
-        //     ['email' => 'committee@padangsymcard.com'],
-        //     [
-        //         'name'              => 'Committee',
-        //         'username'          => 'committee',
-        //         'password'          => Hash::make('password'),
-        //         'role_id'           => $roles['committee']->id,
-        //         'can_multiple_role' => false,
-        //     ]
-        // );
+        $committee = User::updateOrCreate(
+            ['email' => 'committee@padangsymcard.com'],
+            [
+                'name'              => 'Committee',
+                'username'          => 'committee',
+                'password'          => Hash::make('password'),
+                'role_id'           => $roles['committee']->id,
+                'can_multiple_role' => false,
+            ]
+        );
 
-        // $committee->roles()->syncWithoutDetaching([
-        //     $roles['committee']->id,
-        // ]);
+        $committee->roles()->syncWithoutDetaching([
+            $roles['committee']->id,
+        ]);
     }
 }

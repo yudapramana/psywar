@@ -8,8 +8,8 @@
 
     <style>
         /* ===============================
-                                                                       FINAL PRODUCTION STYLE
-                                                                    ================================= */
+                                                                           FINAL PRODUCTION STYLE
+                                                                        ================================= */
 
         .package-card {
             border-radius: 18px;
@@ -39,8 +39,8 @@
         }
 
         /* ===============================
-                                   FIX PACKAGE TITLE & BADGE
-                                ================================= */
+                                       FIX PACKAGE TITLE & BADGE
+                                    ================================= */
 
         .package-title {
             width: 240px;
@@ -139,8 +139,8 @@
         }
 
         /* ===============================
-                                                                       MOBILE
-                                                                    ================================= */
+                                                                           MOBILE
+                                                                        ================================= */
 
         @media (max-width: 768px) {
 
@@ -308,7 +308,7 @@
             </h3>
 
             <a href="{{ route('register') }}" class="btn btn-primary btn-cta">
-                Register as Participant
+                Register Now
             </a>
 
         </div>

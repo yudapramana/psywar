@@ -17,6 +17,62 @@ class BuyPackageController extends Controller
     /**
      * Show Buy Package Page
      */
+    // public function create()
+    // {
+    //     $participant = auth()->user()->participant;
+
+    //     if (!$participant) {
+    //         abort(403, 'Participant profile not found.');
+    //     }
+
+    //     $event = Event::where('is_active', true)->firstOrFail();
+
+    //     // 🔒 CEK APAKAH SUDAH ADA REGISTRASI (APAPUN STATUSNYA)
+    //     $registration = Registration::where('participant_id', $participant->id)
+    //         ->where('event_id', $event->id)
+    //         ->latest()
+    //         ->first();
+
+    //     if ($registration) {
+
+    //         session(['registration_id' => $registration->id]);
+
+    //         $route = match ($registration->payment_step) {
+    //             'choose_bank' => route('dashboard.payment.choose-bank'),
+    //             'waiting_transfer' => route('dashboard.payment.transfer', $registration->id),
+    //             'waiting_verification' => route('dashboard.my-package'),
+    //             'paid' => route('dashboard.my-package'),
+    //             default => route('dashboard.my-package'),
+    //         };
+
+    //         return redirect($route)->with(
+    //             'info',
+    //             'You already have a registration for this event.'
+    //         );
+    //     }
+
+    //     // ✅ BARU BOLEH BUY PACKAGE JIKA BELUM ADA REGISTRASI SAMA SEKALI
+    //     $workshops = DB::table('activities')
+    //         ->join('sessions', 'sessions.activity_id', '=', 'activities.id')
+    //         ->select(
+    //             'activities.id',
+    //             'activities.code',
+    //             'activities.title',
+    //             'sessions.start_time',
+    //             'sessions.end_time'
+    //         )
+    //         ->where('activities.category', 'workshop')
+    //         ->where('activities.is_paid', true)
+    //         ->orderBy('sessions.start_time')
+    //         ->get();
+
+    //     return view('dashboard.package.buy', compact(
+    //         'participant',
+    //         'workshops'
+    //     ));
+    // }
+
+
     public function create()
     {
         $participant = auth()->user()->participant;
@@ -27,7 +83,6 @@ class BuyPackageController extends Controller
 
         $event = Event::where('is_active', true)->firstOrFail();
 
-        // 🔒 CEK APAKAH SUDAH ADA REGISTRASI (APAPUN STATUSNYA)
         $registration = Registration::where('participant_id', $participant->id)
             ->where('event_id', $event->id)
             ->latest()
@@ -45,30 +100,71 @@ class BuyPackageController extends Controller
                 default => route('dashboard.my-package'),
             };
 
-            return redirect($route)->with(
-                'info',
-                'You already have a registration for this event.'
-            );
+            return redirect($route)
+                ->with('info', 'You already have a registration for this event.');
         }
 
-        // ✅ BARU BOLEH BUY PACKAGE JIKA BELUM ADA REGISTRASI SAMA SEKALI
+        /*
+        |----------------------------------------------------------
+        | WORKSHOP WITH REMAINING QUOTA
+        |----------------------------------------------------------
+        */
+
         $workshops = DB::table('activities')
             ->join('sessions', 'sessions.activity_id', '=', 'activities.id')
+            ->leftJoin('registration_items', 'registration_items.activity_id', '=', 'activities.id')
             ->select(
                 'activities.id',
                 'activities.code',
                 'activities.title',
+                'activities.quota',
                 'sessions.start_time',
-                'sessions.end_time'
+                'sessions.end_time',
+                DB::raw('COUNT(registration_items.id) as used')
             )
             ->where('activities.category', 'workshop')
             ->where('activities.is_paid', true)
+            ->groupBy(
+                'activities.id',
+                'activities.code',
+                'activities.title',
+                'activities.quota',
+                'sessions.start_time',
+                'sessions.end_time'
+            )
+            ->havingRaw('quota IS NULL OR used < quota')
             ->orderBy('sessions.start_time')
             ->get();
 
+        /*
+        |----------------------------------------------------------
+        | WORKSHOP AVAILABILITY
+        |----------------------------------------------------------
+        */
+
+        $hasWorkshopAvailable = $workshops->count() > 0;
+
+        /*
+        |----------------------------------------------------------
+        | MORNING & AFTERNOON CHECK
+        |----------------------------------------------------------
+        */
+
+        $morningAvailable = $workshops
+            ->where('start_time', '<', '12:00:00')
+            ->count();
+
+        $afternoonAvailable = $workshops
+            ->where('start_time', '>=', '12:00:00')
+            ->count();
+
+        $canTakeTwoWorkshops = $morningAvailable > 0 && $afternoonAvailable > 0;
+
         return view('dashboard.package.buy', compact(
             'participant',
-            'workshops'
+            'workshops',
+            'hasWorkshopAvailable',
+            'canTakeTwoWorkshops'
         ));
     }
 
@@ -181,103 +277,132 @@ class BuyPackageController extends Controller
         | TRANSACTION
         |----------------------------------------------------------
         */
-        DB::transaction(function () use ($request, $participant, $event) {
+        try {
+            DB::transaction(function () use ($request, $participant, $event) {
 
-            /*
-            |----------------------------------------------------------
-            | WORKSHOP COUNT
-            |----------------------------------------------------------
-            */
-            $workshopCount = match ((int) $request->package_type) {
-                1 => 0,
-                2 => 1,
-                3 => 2,
-            };
+                /*
+                |----------------------------------------------------------
+                | WORKSHOP COUNT
+                |----------------------------------------------------------
+                */
+                $workshopCount = match ((int) $request->package_type) {
+                    1 => 0,
+                    2 => 1,
+                    3 => 2,
+                };
 
-            /*
-            |----------------------------------------------------------
-            | BIRD TYPE
-            |----------------------------------------------------------
-            */
-            $birdType = $event->early_bird_end_date &&
-                        now()->lte($event->early_bird_end_date)
-                ? 'early'
-                : 'late';
+                /*
+                |----------------------------------------------------------
+                | BIRD TYPE
+                |----------------------------------------------------------
+                */
+                $birdType = $event->early_bird_end_date &&
+                            now()->lte($event->early_bird_end_date)
+                    ? 'early'
+                    : 'late';
 
-            /*
-            |----------------------------------------------------------
-            | PRICING
-            |----------------------------------------------------------
-            */
-            $pricingItem = PricingItem::where('participant_category_id', $participant->participant_category_id)
-                ->where('bird_type', $birdType)
-                ->where('workshop_count', $workshopCount)
-                ->firstOrFail();
+                /*
+                |----------------------------------------------------------
+                | PRICING
+                |----------------------------------------------------------
+                */
+                $pricingItem = PricingItem::where('participant_category_id', $participant->participant_category_id)
+                    ->where('bird_type', $birdType)
+                    ->where('workshop_count', $workshopCount)
+                    ->firstOrFail();
 
-            /*
-            |----------------------------------------------------------
-            | CREATE REGISTRATION
-            |----------------------------------------------------------
-            */
-            $registrationId = Registration::insertGetId([
-                'event_id'        => $event->id,
-                'participant_id'  => $participant->id,
-                'pricing_item_id' => $pricingItem->id,
-                'status'          => 'pending',
-                'payment_step'    => 'choose_bank',
-                'total_amount'    => $pricingItem->price,
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ]);
-
-            /*
-            |----------------------------------------------------------
-            | SYMPOSIUM (AUTO INCLUDE)
-            |----------------------------------------------------------
-            */
-            $symposiumIds = Activity::where('category', 'symposium')
-                ->where('is_paid', true)
-                ->pluck('id');
-
-            foreach ($symposiumIds as $symId) {
-                RegistrationItem::create([
-                    'registration_id' => $registrationId,
-                    'activity_id'     => $symId,
-                    'activity_type'   => 'symposium',
+                /*
+                |----------------------------------------------------------
+                | CREATE REGISTRATION
+                |----------------------------------------------------------
+                */
+                $registrationId = Registration::insertGetId([
+                    'event_id'        => $event->id,
+                    'participant_id'  => $participant->id,
+                    'pricing_item_id' => $pricingItem->id,
+                    'status'          => 'pending',
+                    'payment_step'    => 'choose_bank',
+                    'total_amount'    => $pricingItem->price,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
                 ]);
-            }
 
-            /*
-            |----------------------------------------------------------
-            | WORKSHOPS
-            |----------------------------------------------------------
-            */
-            $workshopIds = $request->workshops ?? [];
-
-            if ($workshopCount !== count($workshopIds)) {
-                throw new \Exception('Invalid workshop selection count.');
-            }
-
-            foreach ($workshopIds as $workshopId) {
-
-                $valid = Activity::where('id', $workshopId)
-                    ->where('category', 'workshop')
+                /*
+                |----------------------------------------------------------
+                | SYMPOSIUM (AUTO INCLUDE)
+                |----------------------------------------------------------
+                */
+                $symposiumIds = Activity::where('category', 'symposium')
                     ->where('is_paid', true)
-                    ->exists();
+                    ->pluck('id');
 
-                if (!$valid) {
-                    throw new \Exception('Invalid workshop selected.');
+                foreach ($symposiumIds as $symId) {
+                    RegistrationItem::create([
+                        'registration_id' => $registrationId,
+                        'activity_id'     => $symId,
+                        'activity_type'   => 'symposium',
+                    ]);
                 }
 
-                RegistrationItem::create([
-                    'registration_id' => $registrationId,
-                    'activity_id'     => $workshopId,
-                    'activity_type'   => 'workshop',
-                ]);
+                /*
+                |----------------------------------------------------------
+                | WORKSHOPS
+                |----------------------------------------------------------
+                */
+                $workshopIds = $request->workshops ?? [];
+
+                if ($workshopCount !== count($workshopIds)) {
+                    throw new \Exception('Invalid workshop selection count.');
+                }
+
+                foreach ($workshopIds as $workshopId) {
+
+                    $activity = Activity::findOrFail($workshopId);
+
+                    if ($activity->category !== 'workshop' || !$activity->is_paid) {
+                        throw new \Exception('Invalid workshop selected.');
+                    }
+
+                    /*
+                    |----------------------------------------------------------
+                    | CHECK QUOTA
+                    |----------------------------------------------------------
+                    */
+
+                    $used = RegistrationItem::where('activity_id', $activity->id)
+                        ->lockForUpdate()
+                        ->count();
+
+                    if ($activity->quota !== null && $used >= $activity->quota) {
+                        throw new \Exception('Workshop quota already full.');
+                    }
+
+                    RegistrationItem::create([
+                        'registration_id' => $registrationId,
+                        'activity_id' => $workshopId,
+                        'activity_type' => 'workshop',
+                    ]);
+                }
+
+                session(['registration_id' => $registrationId]);
+            });
+
+            } catch (\Exception $e) {
+
+            if ($e->getMessage() === 'Workshop quota already full.') {
+
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', '⚠ Workshop quota already full, choose another package type or workshop');
+
             }
 
-            session(['registration_id' => $registrationId]);
-        });
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Unable to process your registration. Please try again.');
+        }
 
         /*
         |----------------------------------------------------------

@@ -35,6 +35,11 @@ class Participant extends Model
         return $this->hasMany(Registration::class);
     }
 
+    public function registration()
+    {
+        return $this->hasOne(Registration::class);
+    }
+
     public function papers()
     {
         return $this->hasMany(Paper::class);

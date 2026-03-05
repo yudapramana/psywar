@@ -98,50 +98,8 @@
                                             {{ $session->room->name }}
                                         </div>
 
-
-                                        {{-- SPEAKERS / MODERATOR --}}
-                                        <div class="mb-3 small">
-
-                                            @if ($activity->moderator)
-                                                <div>
-                                                    <strong>Moderator:</strong>
-                                                    {{ $activity->moderator }}
-                                                </div>
-                                            @endif
-
-                                            @if ($activity->lecture)
-                                                <div>
-                                                    <strong>Lecture:</strong>
-                                                    {{ $activity->lecture }}
-                                                </div>
-                                            @endif
-
-                                            @if ($activity->case_presenter)
-                                                <div>
-                                                    <strong>Case Presenter:</strong>
-                                                    {{ $activity->case_presenter }}
-                                                </div>
-                                            @endif
-
-                                            @if ($activity->speakers->count())
-                                                <div>
-                                                    <strong>Speakers:</strong>
-                                                    {{ $activity->speakers->pluck('name')->join(', ') }}
-                                                </div>
-                                            @endif
-
-                                            @if ($activity->panelists->count())
-                                                <div>
-                                                    <strong>Panelists:</strong>
-                                                    {{ $activity->panelists->pluck('name')->join(', ') }}
-                                                </div>
-                                            @endif
-
-                                        </div>
-
-
                                         {{-- TOPICS --}}
-                                        <table class="table table-sm align-middle mb-3">
+                                        <table class="table table-sm align-middle">
                                             <tbody>
                                                 @foreach ($activity->topics as $topic)
                                                     <tr>
@@ -155,33 +113,6 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
-
-
-                                        {{-- SPONSORS --}}
-                                        @if ($activity->sponsors->count())
-                                            <div class="mt-3">
-
-                                                <div class="small text-muted mb-2">
-                                                    Sponsored by
-                                                </div>
-
-                                                <div class="d-flex flex-wrap align-items-center gap-4">
-
-                                                    @foreach ($activity->sponsors as $sponsor)
-                                                        <img src="{{ $sponsor->logo_url }}" alt="{{ $sponsor->name }}" style="
-                                                            height:64px;
-                                                            max-width:140px;
-                                                            object-fit:contain;
-                                                            background:white;
-                                                            padding:6px;
-                                                            border-radius:6px;
-                                                        ">
-                                                    @endforeach
-
-                                                </div>
-
-                                            </div>
-                                        @endif
 
                                     </div>
                                 </div>

@@ -25,15 +25,15 @@ class EventSeeder extends Seeder
             // =========================
             'start_date' => '2026-06-05',
             'end_date' => '2026-06-07',
-            'early_bird_end_date' => '2026-05-25',
+            'early_bird_end_date' => '2026-05-14',
 
             // =========================
             // SUBMISSION TIMELINE
             // =========================
-            'submission_open_at' => Carbon::create(2026, 3, 1, 0, 0, 0),
-            'submission_deadline_at' => Carbon::create(2026, 5, 20, 23, 59, 59),
+            'submission_open_at' => Carbon::create(2026, 3, 5, 0, 0, 0),
+            'submission_deadline_at' => Carbon::create(2026, 5, 15, 23, 59, 59),
             'notification_date' => Carbon::create(2026, 5, 25, 9, 0, 0),
-            'submission_close_at' => Carbon::create(2026, 5, 20, 23, 59, 59),
+            'submission_close_at' => Carbon::create(2026, 5, 15, 23, 59, 59),
 
             // =========================
             // SUBMISSION CONTROL

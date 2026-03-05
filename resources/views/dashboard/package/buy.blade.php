@@ -108,6 +108,11 @@
             'currentStep' => 'choose_package',
         ])
 
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
 
         {{-- FORM --}}
         <form method="POST" action="{{ route('dashboard.buy-package.store') }}">
@@ -130,12 +135,38 @@
             <div class="mb-3">
                 <label class="form-label">Package Type</label>
                 <select id="packageType" name="package_type" class="form-select" required>
+
                     <option value="">Choose...</option>
-                    <option value="1">Symposium</option>
-                    <option value="2">Symposium + 1 Workshop</option>
-                    <option value="3">Symposium + 2 Workshop</option>
+
+                    <option value="1">
+                        Symposium
+                    </option>
+
+                    @if ($hasWorkshopAvailable)
+                        <option value="2">
+                            Symposium + 1 Workshop
+                        </option>
+                    @endif
+
+                    @if ($canTakeTwoWorkshops)
+                        <option value="3">
+                            Symposium + 2 Workshop
+                        </option>
+                    @endif
+
                 </select>
             </div>
+
+
+            @if (!$hasWorkshopAvailable)
+                <div class="alert alert-warning small">
+                    All workshops are fully booked. Only Symposium package is available.
+                </div>
+            @elseif (!$canTakeTwoWorkshops)
+                <div class="alert alert-warning small">
+                    Only 1 workshop package is available because either the morning or afternoon session is already full.
+                </div>
+            @endif
 
             {{-- SYMPOSIUM (FIXED INFO ONLY) --}}
             <div class="mb-3 d-none" id="symposiumSection">
@@ -155,6 +186,7 @@
                         <option value="{{ $ws->id }}">
                             {{ $ws->code }} – {{ $ws->title }}
                             [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
+                            ({{ $ws->quota - $ws->used }} seats left)
                         </option>
                     @endforeach
                 </select>
@@ -178,6 +210,7 @@
                             <option value="{{ $ws->id }}">
                                 {{ $ws->code }} – {{ $ws->title }}
                                 [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
+                                ({{ $ws->quota - $ws->used }} seats left)
                             </option>
                         @endif
                     @endforeach
@@ -191,6 +224,7 @@
                             <option value="{{ $ws->id }}">
                                 {{ $ws->code }} – {{ $ws->title }}
                                 [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
+                                ({{ $ws->quota - $ws->used }} seats left)
                             </option>
                         @endif
                     @endforeach

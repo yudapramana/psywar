@@ -28,7 +28,7 @@ class RoomSeeder extends Seeder
             // =====================
             [
                 'event_id'   => $eventId,
-                'name'       => 'BallRoom',
+                'name'       => 'Hotel ZHM - BallRoom',
                 'category'   => 'symposium',
                 'capacity'   => 500,
                 'created_at' => $now,
@@ -40,7 +40,7 @@ class RoomSeeder extends Seeder
             // =====================
             [
                 'event_id'   => $eventId,
-                'name'       => 'Ruang Mulia 09',
+                'name'       => 'Aula RSUP M. Djamil',
                 'category'   => 'workshop',
                 'capacity'   => 50,
                 'created_at' => $now,
@@ -48,7 +48,7 @@ class RoomSeeder extends Seeder
             ],
             [
                 'event_id'   => $eventId,
-                'name'       => 'Ruang Mulia 10',
+                'name'       => 'Hotel ZHM - Ruang Mulia 10',
                 'category'   => 'workshop',
                 'capacity'   => 50,
                 'created_at' => $now,
@@ -60,7 +60,7 @@ class RoomSeeder extends Seeder
             // =====================
             [
                 'event_id'   => $eventId,
-                'name'       => 'Ruang Mulia 02',
+                'name'       => 'Hotel ZHM - Ruang Mulia 02',
                 'category'   => 'jeopardy',
                 'capacity'   => 30,
                 'created_at' => $now,

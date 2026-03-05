@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             BankSeeder::class,
             PricingItemSeeder::class,
             UserSeeder::class,
-            UserParticipantSeeder::class,
+            // UserParticipantSeeder::class,
         ]);
     }
 }

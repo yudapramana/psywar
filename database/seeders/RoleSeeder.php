@@ -53,6 +53,14 @@ class RoleSeeder extends Seeder
                 'name' => 'PARTICIPANT',
                 'slug' => 'participant',
             ],
+
+            // =========================
+            // SPEAKER
+            // =========================
+            [
+                'name' => 'SPEAKER',
+                'slug' => 'speaker',
+            ],
         ];
 
         foreach ($roles as $role) {

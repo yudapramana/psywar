@@ -15,7 +15,10 @@ class ProgramController extends Controller
         $event = Event::where('is_active', true)->firstOrFail();
 
         $days = EventDay::with([
-            'sessions.activity',
+            'sessions.activity.topics',
+            'sessions.activity.speakers',
+            'sessions.activity.panelists',
+            'sessions.activity.sponsors',
             'sessions.room',
         ])
         ->where('event_id', $event->id)
@@ -24,7 +27,6 @@ class ProgramController extends Controller
 
         $rooms = Room::orderBy('name')->get();
 
-        // slot waktu (ISICAM style)
         $timeSlots = [
             '07:30','08:00','08:30','09:00','09:30',
             '10:00','10:30','11:00','11:30','12:00',
@@ -32,7 +34,6 @@ class ProgramController extends Controller
             '15:30','16:00','16:30','17:00','18:00',
         ];
 
-    
         return view('pages.program.full-program', compact(
             'event',
             'days',

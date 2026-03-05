@@ -26,10 +26,10 @@ class SessionSeeder extends Seeder
         | ROOMS
         |=====================================================
         */
-        $ballroom     = Room::where('name', 'BallRoom')->first();
-        $mulia9       = Room::where('name', 'Ruang Mulia 09')->first();
-        $mulia10      = Room::where('name', 'Ruang Mulia 10')->first();
-        $jeopardyRoom = Room::where('name', 'Ruang Mulia 02')->first();
+        $ballroom     = Room::where('name', 'Hotel ZHM - BallRoom')->first();
+        $mulia9       = Room::where('name', 'Aula RSUP M. Djamil')->first();
+        $mulia10      = Room::where('name', 'Hotel ZHM - Ruang Mulia 10')->first();
+        $jeopardyRoom = Room::where('name', 'Hotel ZHM - Ruang Mulia 02')->first();
 
         /*
         |=====================================================

@@ -37,6 +37,18 @@ class UserParticipantSeeder extends Seeder
                 'category'   => 'Specialist',
                 'institution'=> 'RSUP Dr. M. Djamil Padang',
             ],
+            [
+                'name'       => 'Izzatul hamidah',
+                'email'      => 'izzatul@dentist.test',
+                'category'   => 'General Practitioner / Internship',
+                'institution'=> 'Universitas Andalas',
+            ],
+            [
+                'name'       => 'Pramana Yuda Sayeti',
+                'email'      => 'pramana@gp.test',
+                'category'   => 'General Practitioner / Internship',
+                'institution'=> 'Universitas Indonesia',
+            ],
         ];
 
         foreach ($users as $index => $data) {

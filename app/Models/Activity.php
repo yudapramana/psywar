@@ -25,6 +25,21 @@ class Activity extends Model
         return $this->belongsTo(Event::class);
     }
 
+    public function speakers()
+    {
+        return $this->hasMany(ActivitySpeaker::class);
+    }
+
+    public function panelists()
+    {
+        return $this->hasMany(ActivityPanelist::class);
+    }
+
+    public function sponsors()
+    {
+        return $this->hasMany(ActivitySponsor::class);
+    }
+
     public function topics()
     {
         return $this->hasMany(ActivityTopic::class);
