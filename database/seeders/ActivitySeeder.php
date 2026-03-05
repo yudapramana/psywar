@@ -440,7 +440,7 @@ class ActivitySeeder extends Seeder
                 'title' => $data['title'],
                 'pic' => $data['pic'] ?? null,
                 'moderator' => $data['moderator'] ?? null,
-                'quota' => 1,
+                'quota' => 40,
                 'is_paid' => true,
             ]);
 
