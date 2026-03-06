@@ -179,8 +179,14 @@
                             <input type="url" name="gdrive_link" class="form-control @error('gdrive_link') is-invalid @enderror" value="{{ old('gdrive_link', $paper->gdrive_link) }}" placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing" {{ $paper->status !== 'draft' ? 'readonly' : '' }} required>
 
                             <div class="form-text">
-                                Upload your manuscript to Google Drive and set access to
-                                <b>Anyone with the link (Viewer)</b>.
+                                Upload your manuscript to <b>Google Drive</b>, then follow these steps:
+                                <ol class="mb-1 ps-3">
+                                    <li>Open the uploaded file in Google Drive.</li>
+                                    <li>Click the <b>Share</b> button.</li>
+                                    <li>Change access to <b>Anyone with the link → Viewer</b>.</li>
+                                    <li>Click <b>Copy link</b> and paste the link here.</li>
+                                </ol>
+                                Please ensure the file can be accessed without requesting permission.
                             </div>
 
                             @error('gdrive_link')
