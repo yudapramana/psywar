@@ -26,7 +26,7 @@
 
                 <div class="col-lg-6">
                     <div class="flyer-card">
-                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772167706/PandanViewMandeh/c79bdgx80ycdansy2zjh.png" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg" loading="lazy" decoding="async" width="800" height="1000">
+                        <img src="https://res.cloudinary.com/dezj1x6xp/image/upload/v1772767553/PandanViewMandeh/d3kl0nawfp0fksnuspnf.png" alt="Symcard Flyer 1" class="img-fluid rounded-4 shadow-lg" loading="lazy" decoding="async" width="800" height="1000">
                     </div>
                 </div>
 
