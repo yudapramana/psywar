@@ -19,6 +19,9 @@ class ParticipantCategorySeeder extends Seeder
             [
                 'name' => 'Specialist',
             ],
+            [
+                'name' => 'Speaker / Faculty / Sponsor',
+            ],
         ];
 
         DB::table('participant_categories')->insert(

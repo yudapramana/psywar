@@ -107,7 +107,7 @@ class FortifyServiceProvider extends ServiceProvider
         
         // ✅ REGISTER VIEW (FIXED)
         Fortify::registerView(function () {
-            $participantCategories = ParticipantCategory::orderBy('name')->get();
+            $participantCategories = ParticipantCategory::orderBy('id')->get();
             // dd($participantCategories);
             return view('auth.register', [
                 'participantCategories' => $participantCategories,

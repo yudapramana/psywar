@@ -81,6 +81,27 @@ class BuyPackageController extends Controller
             abort(403, 'Participant profile not found.');
         }
 
+        /*
+        |----------------------------------------------------------
+        | BLOCK CATEGORY (SPEAKER / FACULTY / SPONSOR)
+        |----------------------------------------------------------
+        */
+
+        $categoryName = strtolower($participant->participantCategory->name ?? '');
+
+        $blockedCategories = [
+            'speaker',
+            'faculty',
+            'sponsor',
+            'speaker / faculty / sponsor'
+        ];
+
+        if (in_array($categoryName, $blockedCategories)) {
+            return redirect()
+                ->route('dashboard.my-package')
+                ->with('error', 'Participants with this category cannot purchase a package.');
+        }
+
         $event = Event::where('is_active', true)->firstOrFail();
 
         $registration = Registration::where('participant_id', $participant->id)
