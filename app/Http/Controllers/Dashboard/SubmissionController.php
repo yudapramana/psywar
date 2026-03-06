@@ -203,20 +203,20 @@ class SubmissionController extends Controller
                     // =========================
                     // 2️⃣ WAJIB usp=sharing
                     // =========================
-                    if (!str_contains($value, 'usp=sharing')) {
-                        $fail('Please set access to "Anyone with the link (Viewer)".');
-                        return;
-                    }
+                    // if (!str_contains($value, 'usp=sharing')) {
+                    //     $fail('Invalid Google Drive link. Please open your file in Google Drive, click "Share", then click "Copy link" and paste that link here. Make sure access is set to "Anyone with the link → Viewer".');
+                    //     return;
+                    // }
 
                     // =========================
                     // 3️⃣ FORMAT FILE DRIVE (/file/d/)
                     // =========================
                     // Contoh valid:
                     // https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-                    if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
-                        $fail('Invalid Google Drive file link format.');
-                        return;
-                    }
+                    // if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
+                    //     $fail('Invalid Google Drive file link format.');
+                    //     return;
+                    // }
                 }
             ],
 
@@ -390,15 +390,15 @@ class SubmissionController extends Controller
                         return;
                     }
 
-                    if (!str_contains($value, 'usp=sharing')) {
-                        $fail('Please set access to "Anyone with the link (Viewer)".');
-                        return;
-                    }
+                    // if (!str_contains($value, 'usp=sharing')) {
+                    //     $fail('Please set access to "Anyone with the link (Viewer)".');
+                    //     return;
+                    // }
 
-                    if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
-                        $fail('Invalid Google Drive file link format.');
-                        return;
-                    }
+                    // if (!preg_match('#/file/d/[a-zA-Z0-9_-]+#', $value)) {
+                    //     $fail('Invalid Google Drive file link format.');
+                    //     return;
+                    // }
                 }
             ],
 
