@@ -120,7 +120,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         // ✅ REDIRECT SETELAH LOGIN
-        Fortify::redirects('login', '/dashboard/my-schedule');
+        Fortify::redirects('login', '/dashboard/my-package');
 
         // ✅ AUTHENTICATION
         // Fortify::authenticateUsing(function (Request $request) {

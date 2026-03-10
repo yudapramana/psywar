@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/dashboard/my-schedule',
+    'home' => '/dashboard/my-package',
 
     /*
     |--------------------------------------------------------------------------

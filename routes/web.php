@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->get('/debug-auth', function () {
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('dashboard.my-schedule');
+    return redirect()->route('dashboard.my-package');
 })->name('dashboard.index');
 
 Route::middleware(['auth'])->prefix('dashboard')->group(function () {
