@@ -17,62 +17,6 @@ class BuyPackageController extends Controller
     /**
      * Show Buy Package Page
      */
-    // public function create()
-    // {
-    //     $participant = auth()->user()->participant;
-
-    //     if (!$participant) {
-    //         abort(403, 'Participant profile not found.');
-    //     }
-
-    //     $event = Event::where('is_active', true)->firstOrFail();
-
-    //     // 🔒 CEK APAKAH SUDAH ADA REGISTRASI (APAPUN STATUSNYA)
-    //     $registration = Registration::where('participant_id', $participant->id)
-    //         ->where('event_id', $event->id)
-    //         ->latest()
-    //         ->first();
-
-    //     if ($registration) {
-
-    //         session(['registration_id' => $registration->id]);
-
-    //         $route = match ($registration->payment_step) {
-    //             'choose_bank' => route('dashboard.payment.choose-bank'),
-    //             'waiting_transfer' => route('dashboard.payment.transfer', $registration->id),
-    //             'waiting_verification' => route('dashboard.my-package'),
-    //             'paid' => route('dashboard.my-package'),
-    //             default => route('dashboard.my-package'),
-    //         };
-
-    //         return redirect($route)->with(
-    //             'info',
-    //             'You already have a registration for this event.'
-    //         );
-    //     }
-
-    //     // ✅ BARU BOLEH BUY PACKAGE JIKA BELUM ADA REGISTRASI SAMA SEKALI
-    //     $workshops = DB::table('activities')
-    //         ->join('sessions', 'sessions.activity_id', '=', 'activities.id')
-    //         ->select(
-    //             'activities.id',
-    //             'activities.code',
-    //             'activities.title',
-    //             'sessions.start_time',
-    //             'sessions.end_time'
-    //         )
-    //         ->where('activities.category', 'workshop')
-    //         ->where('activities.is_paid', true)
-    //         ->orderBy('sessions.start_time')
-    //         ->get();
-
-    //     return view('dashboard.package.buy', compact(
-    //         'participant',
-    //         'workshops'
-    //     ));
-    // }
-
-
     public function create()
     {
         $participant = auth()->user()->participant;
@@ -145,6 +89,7 @@ class BuyPackageController extends Controller
             )
             ->where('activities.category', 'workshop')
             ->where('activities.is_paid', true)
+            ->whereRaw("LOWER(activities.title) NOT LIKE '%nurse%'")
             ->groupBy(
                 'activities.id',
                 'activities.code',
@@ -181,22 +126,189 @@ class BuyPackageController extends Controller
 
         $canTakeTwoWorkshops = $morningAvailable > 0 && $afternoonAvailable > 0;
 
+        $nurseWorkshop = DB::table('activities')
+            ->join('sessions', 'sessions.activity_id', '=', 'activities.id')
+            ->leftJoin('registration_items', 'registration_items.activity_id', '=', 'activities.id')
+            ->select(
+                'activities.id',
+                'activities.title',
+                'activities.quota',
+                'sessions.start_time',
+                'sessions.end_time',
+                DB::raw('COUNT(registration_items.id) as used')
+            )
+            ->where('activities.category', 'workshop')
+            ->where('activities.is_paid', true)
+            ->whereRaw("LOWER(activities.title) LIKE '%nurse%'")
+            ->groupBy(
+                'activities.id',
+                'activities.title',
+                'activities.quota',
+                'sessions.start_time',
+                'sessions.end_time'
+            )
+            ->havingRaw('quota IS NULL OR used < quota')
+            ->first();
+
+        $nurseWorkshopAvailable = $nurseWorkshop ? true : false;
+
         return view('dashboard.package.buy', compact(
             'participant',
             'workshops',
             'hasWorkshopAvailable',
-            'canTakeTwoWorkshops'
+            'canTakeTwoWorkshops',
+            'nurseWorkshopAvailable'
         ));
     }
-
-
-
 
     public function getPrice(Request $request)
     {
         $request->validate([
-            'package_type' => 'required|in:1,2,3',
+            'package_type' => 'required|in:1,2,3,4',
         ]);
+
+        $participant = auth()->user()->participant;
+
+        /*
+        |----------------------------------------------------------
+        | PACKAGE CONFIG
+        |----------------------------------------------------------
+        */
+        $packageType = (int) $request->package_type;
+
+        $config = [
+            1 => ['includes_symposium' => true,  'workshop_count' => 0],
+            2 => ['includes_symposium' => true,  'workshop_count' => 1],
+            3 => ['includes_symposium' => true,  'workshop_count' => 2],
+            4 => ['includes_symposium' => false, 'workshop_count' => 1], // nurse
+        ];
+
+        $includesSymposium = $config[$packageType]['includes_symposium'];
+        $workshopCount     = $config[$packageType]['workshop_count'];
+
+        /*
+        |----------------------------------------------------------
+        | ACTIVE EVENT + BIRD TYPE
+        |----------------------------------------------------------
+        */
+        $event = Event::where('is_active', true)->firstOrFail();
+
+        $birdType = $event->early_bird_end_date && now()->lte($event->early_bird_end_date)
+            ? 'early'
+            : 'late';
+
+        /*
+        |----------------------------------------------------------
+        | NURSE WORKSHOP (ONLY PACKAGE 4)
+        |----------------------------------------------------------
+        */
+        $nurseWorkshop = null;
+
+        if ($packageType === 4) {
+
+            $nurseWorkshop = DB::table('activities')
+                ->join('sessions','sessions.activity_id','=','activities.id')
+                ->leftJoin('registration_items','registration_items.activity_id','=','activities.id')
+                ->select(
+                    'activities.id',
+                    'activities.title',
+                    'activities.quota',
+                    'sessions.start_time',
+                    'sessions.end_time',
+                    DB::raw('COUNT(registration_items.id) as used')
+                )
+                ->where('activities.category','workshop')
+                ->where('activities.is_paid',true)
+                ->whereRaw("LOWER(activities.title) LIKE '%nurse%'")
+                ->groupBy(
+                    'activities.id',
+                    'activities.title',
+                    'activities.quota',
+                    'sessions.start_time',
+                    'sessions.end_time'
+                )
+                ->havingRaw('quota IS NULL OR used < quota')
+                ->first();
+
+            if (!$nurseWorkshop) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nurse workshop already full'
+                ], 404);
+            }
+        }
+
+        /*
+        |----------------------------------------------------------
+        | PRICING
+        |----------------------------------------------------------
+        */
+        $pricing = DB::table('pricing_items')
+            ->where('participant_category_id', $participant->participant_category_id)
+            ->where('bird_type', $birdType)
+            ->where('includes_symposium', $includesSymposium)
+            ->where('workshop_count', $workshopCount)
+            ->first();
+
+        if (!$pricing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pricing not available'
+            ], 404);
+        }
+
+        /*
+        |----------------------------------------------------------
+        | RESPONSE
+        |----------------------------------------------------------
+        */
+        return response()->json([
+            'success' => true,
+            'price' => (int) $pricing->price,
+            'bird_type' => $birdType,
+            'nurse_workshop' => $nurseWorkshop ? [
+                'id' => $nurseWorkshop->id,
+                'title' => $nurseWorkshop->title,
+                'time' =>
+                    substr($nurseWorkshop->start_time,0,5)
+                    .' - '.
+                    substr($nurseWorkshop->end_time,0,5),
+                'seats' => $nurseWorkshop->quota !== null
+                    ? ($nurseWorkshop->quota - $nurseWorkshop->used)
+                    : null
+            ] : null
+        ]);
+    }
+
+    public function getPriceOld(Request $request)
+    {
+        $request->validate([
+            'package_type' => 'required|in:1,2,3,4',
+        ]);
+
+        switch ((int) $request->package_type) {
+
+            case 1:
+                $includesSymposium = true;
+                $workshopCount = 0;
+                break;
+
+            case 2:
+                $includesSymposium = true;
+                $workshopCount = 1;
+                break;
+
+            case 3:
+                $includesSymposium = true;
+                $workshopCount = 2;
+                break;
+
+            case 4: // workshop nurse
+                $includesSymposium = false;
+                $workshopCount = 1;
+                break;
+        }
+
 
         $participant = auth()->user()->participant;
 
@@ -221,7 +333,45 @@ class BuyPackageController extends Controller
             1 => 0,
             2 => 1,
             3 => 2,
+            4 => 1,
         };
+
+
+
+        $nurseWorkshop = null;
+
+        if ($request->package_type == 4) {
+
+            $nurseWorkshop = DB::table('activities')
+                ->join('sessions','sessions.activity_id','=','activities.id')
+                ->leftJoin('registration_items','registration_items.activity_id','=','activities.id')
+                ->select(
+                    'activities.id',
+                    'activities.title',
+                    'activities.quota',
+                    'sessions.start_time',
+                    'sessions.end_time',
+                    DB::raw('COUNT(registration_items.id) as used')
+                )
+                ->where('activities.category','workshop')
+                ->where('activities.is_paid',true)
+                ->whereRaw("LOWER(activities.title) LIKE '%nurse%'")
+                ->groupBy(
+                    'activities.id',
+                    'activities.title',
+                    'activities.quota',
+                    'sessions.start_time',
+                    'sessions.end_time'
+                )
+                ->havingRaw('quota IS NULL OR used < quota')
+                ->first();
+
+            if(!$nurseWorkshop){
+                return response()->json([
+                    'message'=>'Nurse workshop already full'
+                ],404);
+            }
+        }
 
         // =========================
         // PRICING ITEM
@@ -229,8 +379,11 @@ class BuyPackageController extends Controller
         $pricing = DB::table('pricing_items')
             ->where('participant_category_id', $participant->participant_category_id)
             ->where('bird_type', $birdType)
+            ->where('includes_symposium', $includesSymposium)
             ->where('workshop_count', $workshopCount)
             ->first();
+
+        
 
         if (!$pricing) {
             return response()->json([
@@ -239,12 +392,18 @@ class BuyPackageController extends Controller
         }
 
         return response()->json([
-            'price'     => (int) $pricing->price,
+            'price' => (int) $pricing->price,
             'bird_type' => $birdType,
+            'nurse_workshop' => $nurseWorkshop ? [
+                'id' => $nurseWorkshop->id,
+                'title' => $nurseWorkshop->title,
+                'time' =>
+                    substr($nurseWorkshop->start_time,0,5)
+                    .' - '.
+                    substr($nurseWorkshop->end_time,0,5)
+            ] : null
         ]);
     }
-
-
 
     /**
      * Store Buy Package
@@ -259,7 +418,7 @@ class BuyPackageController extends Controller
         |----------------------------------------------------------
         */
         $request->validate([
-            'package_type' => 'required|in:1,2,3',
+            'package_type' => 'required|in:1,2,3,4',
 
             // package 2 & 3 pakai workshops[]
             'workshops' => 'exclude_unless:package_type,2,3|array',
@@ -306,11 +465,28 @@ class BuyPackageController extends Controller
                 | WORKSHOP COUNT
                 |----------------------------------------------------------
                 */
-                $workshopCount = match ((int) $request->package_type) {
-                    1 => 0,
-                    2 => 1,
-                    3 => 2,
-                };
+                switch ((int) $request->package_type) {
+
+                    case 1:
+                        $includesSymposium = true;
+                        $workshopCount = 0;
+                        break;
+
+                    case 2:
+                        $includesSymposium = true;
+                        $workshopCount = 1;
+                        break;
+
+                    case 3:
+                        $includesSymposium = true;
+                        $workshopCount = 2;
+                        break;
+
+                    case 4:
+                        $includesSymposium = false;
+                        $workshopCount = 1;
+                        break;
+                }
 
                 /*
                 |----------------------------------------------------------
@@ -329,6 +505,7 @@ class BuyPackageController extends Controller
                 */
                 $pricingItem = PricingItem::where('participant_category_id', $participant->participant_category_id)
                     ->where('bird_type', $birdType)
+                    ->where('includes_symposium', $includesSymposium)
                     ->where('workshop_count', $workshopCount)
                     ->firstOrFail();
 
@@ -353,21 +530,56 @@ class BuyPackageController extends Controller
                 | SYMPOSIUM (AUTO INCLUDE)
                 |----------------------------------------------------------
                 */
-                $symposiumIds = Activity::where('category', 'symposium')
-                    ->where('is_paid', true)
-                    ->pluck('id');
+                if($includesSymposium){
+                    $symposiumIds = Activity::where('category', 'symposium')
+                        ->where('is_paid', true)
+                        ->pluck('id');
 
-                foreach ($symposiumIds as $symId) {
-                    RegistrationItem::create([
-                        'registration_id' => $registrationId,
-                        'activity_id'     => $symId,
-                        'activity_type'   => 'symposium',
-                    ]);
+                    foreach ($symposiumIds as $symId) {
+                        RegistrationItem::create([
+                            'registration_id' => $registrationId,
+                            'activity_id'     => $symId,
+                            'activity_type'   => 'symposium',
+                        ]);
+                    }
                 }
 
                 /*
                 |----------------------------------------------------------
-                | WORKSHOPS
+                | WORKSHOP FOR NURSE (AUTO ASSIGN)
+                |----------------------------------------------------------
+                */
+                if ($request->package_type == 4) {
+
+                    $activity = Activity::query()
+                        ->where('category','workshop')
+                        ->where('is_paid',true)
+                        ->whereRaw("LOWER(title) LIKE '%nurse%'")
+                        ->lockForUpdate()
+                        ->firstOrFail();
+
+                    $used = RegistrationItem::where('activity_id',$activity->id)
+                        ->lockForUpdate()
+                        ->count();
+
+                    if ($activity->quota !== null && $used >= $activity->quota) {
+                        throw new \Exception('Workshop quota already full.');
+                    }
+
+                    RegistrationItem::create([
+                        'registration_id'=>$registrationId,
+                        'activity_id'=>$activity->id,
+                        'activity_type'=>'workshop',
+                    ]);
+
+                    session(['registration_id' => $registrationId]);
+
+                    return;
+                }
+
+                /*
+                |----------------------------------------------------------
+                | WORKSHOPS NORMAL PACKAGE
                 |----------------------------------------------------------
                 */
                 $workshopIds = $request->workshops ?? [];

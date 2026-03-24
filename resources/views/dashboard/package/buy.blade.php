@@ -70,6 +70,70 @@
             font-size: 0.75rem;
             color: #6c757d;
         }
+
+        .select2-container--default .select2-results__option {
+            padding: 10px;
+        }
+
+        .select2-container--default .select2-results__option--highlighted {
+            background-color: #0d6efd !important;
+            color: #fff;
+        }
+
+        /* Samakan tinggi dengan Bootstrap form-select */
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        /* Align text vertical */
+        .select2-container--default .select2-selection__rendered {
+            line-height: 24px !important;
+            padding-left: 0 !important;
+        }
+
+        /* Align arrow */
+        .select2-container--default .select2-selection__arrow {
+            height: 36px !important;
+            right: 10px;
+        }
+
+        .select2-selection {
+            display: flex !important;
+            align-items: center;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn .2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #nurseWorkshopCard {
+            transition: all 0.2s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        #nurseWorkshopCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+        }
     </style>
 
     <div class="auth-card">
@@ -84,7 +148,8 @@
             <div class="d-flex justify-content-center align-items-center h-100">
                 <div class="text-center">
                     <div class="spinner-border text-danger mb-2"></div>
-                    <div class="fw-semibold">Loading price…</div>
+                    {{-- <div class="fw-semibold">Loading price…</div> --}}
+                    <div class="fw-semibold">Calculating best price…</div>
                 </div>
             </div>
         </div>
@@ -154,6 +219,10 @@
                         </option>
                     @endif
 
+                    @if ($nurseWorkshopAvailable && auth()->user()->participant->participantCategory->name == 'Student / Nurse')
+                        <option value="4">Workshop for Nurse</option>
+                    @endif
+
                 </select>
             </div>
 
@@ -183,10 +252,14 @@
                     <option value="">Choose Workshop</option>
 
                     @foreach ($workshops as $ws)
-                        <option value="{{ $ws->id }}">
+                        {{-- <option value="{{ $ws->id }}">
                             {{ $ws->code }} – {{ $ws->title }}
                             [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
                             ({{ $ws->quota - $ws->used }} seats left)
+                        </option> --}}
+                        <option value="{{ $ws->id }}" data-title="{{ $ws->code }} – {{ $ws->title }}" data-time="[{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]" data-seat="({{ $ws->quota - $ws->used }} seats left)">
+
+                            {{ $ws->code }} – {{ $ws->title }}
                         </option>
                     @endforeach
                 </select>
@@ -207,10 +280,14 @@
                     <option value="">Choose Morning Workshop</option>
                     @foreach ($workshops as $ws)
                         @if ($ws->start_time < '12:00:00')
-                            <option value="{{ $ws->id }}">
+                            {{-- <option value="{{ $ws->id }}">
                                 {{ $ws->code }} – {{ $ws->title }}
                                 [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
                                 ({{ $ws->quota - $ws->used }} seats left)
+                            </option> --}}
+                            <option value="{{ $ws->id }}" data-title="{{ $ws->code }} – {{ $ws->title }}" data-time="[{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]" data-seat="({{ $ws->quota - $ws->used }} seats left)">
+
+                                {{ $ws->code }} – {{ $ws->title }}
                             </option>
                         @endif
                     @endforeach
@@ -221,10 +298,14 @@
                     <option value="">Choose Afternoon Workshop</option>
                     @foreach ($workshops as $ws)
                         @if ($ws->start_time >= '12:00:00')
-                            <option value="{{ $ws->id }}">
+                            {{-- <option value="{{ $ws->id }}">
                                 {{ $ws->code }} – {{ $ws->title }}
                                 [{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]
                                 ({{ $ws->quota - $ws->used }} seats left)
+                            </option> --}}
+                            <option value="{{ $ws->id }}" data-title="{{ $ws->code }} – {{ $ws->title }}" data-time="[{{ substr($ws->start_time, 0, 5) }} – {{ substr($ws->end_time, 0, 5) }}]" data-seat="({{ $ws->quota - $ws->used }} seats left)">
+
+                                {{ $ws->code }} – {{ $ws->title }}
                             </option>
                         @endif
                     @endforeach
@@ -232,6 +313,27 @@
 
                 <div class="form-text mt-1">
                     Select <b>1 morning</b> and <b>1 afternoon</b> workshop.
+                </div>
+            </div>
+
+            {{-- ONLY WORKSHOP NURSE --}}
+            <div class="mb-3 d-none" id="workshopNurse">
+                <label class="form-label">Nurse Workshop</label>
+
+                {{-- <textarea type="text" id="nurseWorkshopTitle" class="form-control" readonly>
+                </textarea> --}}
+                <div id="nurseWorkshopCard" class="border rounded p-3" style="background:#f8f9fa;">
+
+                    <div class="fw-semibold mb-1" id="nurseTitle">-</div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small" id="nurseTime">-</span>
+
+                        <span id="nurseBadge" class="badge bg-success">
+                            Available
+                        </span>
+                    </div>
+
                 </div>
             </div>
 
@@ -253,8 +355,128 @@
     </div>
 
     @push('scripts')
+        <script src="{{ asset('projects/assets/vendor/jquery/jquery-3.6.0.min.js') }}"></script>
+
+        <link href="{{ asset('projects/assets/vendor/select2/select2.min.css') }}" rel="stylesheet" />
+        <script src="{{ asset('projects/assets/vendor/select2/select2.min.js') }}"></script>
+
+
+        {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+
+        {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
+
+        {{-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
+
         <script>
+            $(document).ready(function() {
+
+                function formatWorkshop(option) {
+                    if (!option.id) return option.text
+
+                    const el = $(option.element)
+
+                    const title = el.data('title')
+                    const time = el.data('time')?.replace('[', '').replace(']', '')
+                    const seatRaw = el.data('seat')?.replace('(', '').replace(')', '')
+
+                    let seatNumber = parseInt(seatRaw)
+
+                    let badge = ''
+                    let badgeColor = '#198754' // green
+
+                    if (seatNumber <= 5 && seatNumber > 0) {
+                        badge = 'Almost Full'
+                        badgeColor = '#fd7e14'
+                    } else if (seatNumber === 0) {
+                        badge = 'Full'
+                        badgeColor = '#dc3545'
+                    } else {
+                        badge = 'Available'
+                    }
+
+                    return $(`
+        <div style="padding:6px 0;">
+            <div style="font-weight:600; font-size:14px;">
+                ${title}
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                <span style="font-size:12px; color:#6c757d;">
+                    ${time}
+                </span>
+
+                <span style="
+                    font-size:11px;
+                    padding:2px 6px;
+                    border-radius:6px;
+                    background:${badgeColor};
+                    color:#fff;
+                ">
+                    ${badge}
+                </span>
+            </div>
+        </div>
+    `)
+                }
+
+                $('#workshopSingleSelect').select2({
+                    width: '100%',
+                    placeholder: 'Choose Workshop',
+                    templateResult: formatWorkshop,
+                    templateSelection: function(option) {
+                        if (!option.id) return option.text
+
+                        const el = $(option.element)
+                        const title = el.data('title')
+                        const time = el.data('time')?.replace('[', '').replace(']', '')
+
+                        return `${title} (${time})`
+                    },
+                    minimumResultsForSearch: 5 // auto hide search kalau sedikit
+                })
+
+                $('#workshopMorningSelect').select2({
+                    width: '100%',
+                    placeholder: 'Choose Workshop',
+                    templateResult: formatWorkshop,
+                    templateSelection: function(option) {
+                        if (!option.id) return option.text
+
+                        const el = $(option.element)
+                        const title = el.data('title')
+                        const time = el.data('time')?.replace('[', '').replace(']', '')
+
+                        return `${title} (${time})`
+                    },
+                    minimumResultsForSearch: 5 // auto hide search kalau sedikit
+                })
+
+                $('#workshopAfternoonSelect').select2({
+                    width: '100%',
+                    placeholder: 'Choose Workshop',
+                    templateResult: formatWorkshop,
+                    templateSelection: function(option) {
+                        if (!option.id) return option.text
+
+                        const el = $(option.element)
+                        const title = el.data('title')
+                        const time = el.data('time')?.replace('[', '').replace(']', '')
+
+                        return `${title} (${time})`
+                    },
+                    minimumResultsForSearch: 5 // auto hide search kalau sedikit
+                })
+
+            })
+
             document.addEventListener('DOMContentLoaded', () => {
+
+                const nurseTitle = document.getElementById('nurseTitle')
+                const nurseTime = document.getElementById('nurseTime')
+                const nurseBadge = document.getElementById('nurseBadge')
+
+                const workshopNurse = document.getElementById('workshopNurse')
+                const nurseWorkshopTitle = document.getElementById('nurseWorkshopTitle')
 
                 const packageType = document.getElementById('packageType')
                 const priceInput = document.getElementById('packagePrice')
@@ -322,7 +544,10 @@
                         locked = true
 
                         submitBtn.disabled = true
-                        submitBtn.innerHTML = 'Processing…'
+                        submitBtn.innerHTML = `
+                                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                                    Processing...
+                                                `
 
                         form.submit()
                     })
@@ -335,6 +560,7 @@
                     symposium.classList.add('d-none')
                     workshopSingle.classList.add('d-none')
                     workshopDouble.classList.add('d-none')
+                    workshopNurse.classList.add('d-none')
 
                     wsSingle.required = false
                     wsMorning.required = false
@@ -367,23 +593,37 @@
                             }
                         )
 
-                        if (!res.ok) throw new Error('Price not found')
-
                         const data = await res.json()
+
+                        if (!res.ok) {
+                            throw new Error(data.message ?? 'Price not available')
+                        }
 
                         priceInput.value =
                             'Rp ' + new Intl.NumberFormat('id-ID').format(data.price) +
                             ` (${data.bird_type.toUpperCase()} BIRD)`
 
-                        symposium.classList.remove('d-none')
+                        /* ===============================
+                         * UI LOGIC PER PACKAGE
+                         * =============================== */
+
+                        // DEFAULT: hide semua
+                        symposium.classList.add('d-none')
+
+                        if (type === '1') {
+                            // Symposium only
+                            symposium.classList.remove('d-none')
+                        }
 
                         if (type === '2') {
+                            symposium.classList.remove('d-none')
                             workshopSingle.classList.remove('d-none')
                             wsSingle.required = true
                             wsSingle.disabled = false
                         }
 
                         if (type === '3') {
+                            symposium.classList.remove('d-none')
                             workshopDouble.classList.remove('d-none')
                             wsMorning.required = true
                             wsAfternoon.required = true
@@ -391,9 +631,46 @@
                             wsAfternoon.disabled = false
                         }
 
+                        if (type === '4') {
+                            workshopNurse.classList.remove('d-none')
+                            workshopNurse.classList.add('fade-in')
+
+                            const nurse = data.nurse_workshop
+
+                            nurseTitle.innerText = nurse.title
+                            nurseTime.innerText = nurse.time
+
+                            // Extract seat info (kalau nanti kamu kirim quota)
+                            let badgeText = 'Available'
+                            let badgeClass = 'bg-success'
+
+                            // OPTIONAL (kalau backend kirim seat)
+                            if (nurse.seats !== undefined) {
+                                if (nurse.seats === 0) {
+                                    badgeText = 'Full'
+                                    badgeClass = 'bg-danger'
+                                } else if (nurse.seats <= 5) {
+                                    badgeText = 'Almost Full'
+                                    badgeClass = 'bg-warning'
+                                } else {
+                                    badgeText = `${nurse.seats} seats left`
+                                    badgeClass = 'bg-success'
+                                }
+                            }
+
+                            nurseBadge.className = 'badge ' + badgeClass
+                            nurseBadge.innerText = badgeText
+                        }
+
                     } catch (err) {
                         console.error(err)
                         priceInput.value = 'Rp -'
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Package not available',
+                            text: err.message,
+                            confirmButtonColor: '#dc3545'
+                        })
                     } finally {
                         loading.classList.add('d-none')
                     }

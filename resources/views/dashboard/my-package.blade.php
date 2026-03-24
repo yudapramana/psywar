@@ -24,16 +24,6 @@
     @php
         $p = $participant;
         $price = $registration?->pricingItem;
-
-        // Package label
-        $packageLabel = '-';
-        if ($price) {
-            $packageLabel = 'Symposium';
-            if ($price->workshop_count > 0) {
-                $packageLabel .= ' + ' . $price->workshop_count . ' Workshop';
-            }
-            $packageLabel .= ' (' . ucfirst($price->bird_type) . ' Bird)';
-        }
     @endphp
 
     <div class="row g-4">
@@ -104,7 +94,7 @@
                     <table class="table table-borderless mb-0">
                         <tr>
                             <td>Package</td>
-                            <td>{{ $packageLabel }}</td>
+                            <td>{{ $price?->package_label ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td>Package Price</td>
