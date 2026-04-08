@@ -8,8 +8,8 @@
 
     <style>
         /* ===============================
-                                                                           FINAL PRODUCTION STYLE
-                                                                        ================================= */
+                                                                                       FINAL PRODUCTION STYLE
+                                                                                    ================================= */
 
         .package-card {
             border-radius: 18px;
@@ -39,8 +39,8 @@
         }
 
         /* ===============================
-                                       FIX PACKAGE TITLE & BADGE
-                                    ================================= */
+                                                   FIX PACKAGE TITLE & BADGE
+                                                ================================= */
 
         .package-title {
             width: 240px;
@@ -139,8 +139,8 @@
         }
 
         /* ===============================
-                                                                           MOBILE
-                                                                        ================================= */
+                                                                                       MOBILE
+                                                                                    ================================= */
 
         @media (max-width: 768px) {
 
@@ -178,6 +178,11 @@
         /* PACKAGE 3 – Red */
         .package-2 {
             background: linear-gradient(135deg, #d7263d, #c2185b, #8e0038);
+        }
+
+        /* PACKAGE 4 – Green / Emerald */
+        .package-3 {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32, #004d40);
         }
     </style>
 
