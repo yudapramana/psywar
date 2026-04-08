@@ -8,8 +8,8 @@
 
     <style>
         /* ===============================
-                                                                                       FINAL PRODUCTION STYLE
-                                                                                    ================================= */
+                                                                                                                                   FINAL PRODUCTION STYLE
+                                                                                                                                ================================= */
 
         .package-card {
             border-radius: 18px;
@@ -39,8 +39,8 @@
         }
 
         /* ===============================
-                                                   FIX PACKAGE TITLE & BADGE
-                                                ================================= */
+                                                                                               FIX PACKAGE TITLE & BADGE
+                                                                                            ================================= */
 
         .package-title {
             width: 240px;
@@ -139,8 +139,8 @@
         }
 
         /* ===============================
-                                                                                       MOBILE
-                                                                                    ================================= */
+                                                                                                                                   MOBILE
+                                                                                                                                ================================= */
 
         @media (max-width: 768px) {
 
@@ -235,7 +235,7 @@
                         $packageName = 'Symposium + 2 Workshops';
                     }
                     if ($symposium == 0 && $workshop == 1) {
-                        $packageName = 'Workshop Only';
+                        $packageName = 'Workshop for Nurse';
                     }
                 @endphp
 
