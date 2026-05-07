@@ -54,7 +54,7 @@
     @include('partials.course-director')
 
     {{-- ================= SPONSORS ================= --}}
-    {{-- @include('partials.sponsors') --}}
+    @include('partials.sponsors')
 
     {{-- ================= CTA ================= --}}
     @include('partials.cta')
